@@ -4,14 +4,126 @@ const STORAGE_KEYS = {
   user: "edumetrics:user",
   apiKey: "edumetrics:apiKey",
   savedTests: "edumetrics:savedTests",
-  scheduledTests: "edumetrics:scheduledTests"
+  scheduledTests: "edumetrics:scheduledTests",
+  testResults: "edumetrics:testResults"
 };
+
+/** 10 вопросов по информатике (автопроверка по индексу correct) */
+const INFORMATICS_QUESTIONS = [
+  {
+    text: {
+      kz: "Құрамдас бөліктер: процессор, жад, диск жинақталған құрылғы не?",
+      ru: "Устройство, объединяющее процессор, память и накопители — это?"
+    },
+    options: [
+      { kz: "Перифериялық құрылғы", ru: "Периферийное устройство" },
+      { kz: "Жүйелік блок", ru: "Системный блок" },
+      { kz: "Монитор", ru: "Монитор" },
+      { kz: "Тінтуір", ru: "Мышь" }
+    ],
+    correct: 1
+  },
+  {
+    text: { kz: "Екілік 101₂ сандар жүйесінде неге тең?", ru: "Чему равно двоичное число 101₂?" },
+    options: [
+      { kz: "5", ru: "5" },
+      { kz: "7", ru: "7" },
+      { kz: "3", ru: "3" },
+      { kz: "6", ru: "6" }
+    ],
+    correct: 0
+  },
+  {
+    text: { kz: "Операциялық жүйенің міндеті емес:", ru: "Что не является функцией операционной системы?" },
+    options: [
+      { kz: "Ресурстарды басқару", ru: "Управление ресурсами" },
+      { kz: "Текстті форматтау (Word-та)", ru: "Форматирование текста в Word" },
+      { kz: "Файлдармен жұмыс", ru: "Работа с файлами" },
+      { kz: "Қолданбаларды іске қосу", ru: "Запуск программ" }
+    ],
+    correct: 1
+  },
+  {
+    text: { kz: "HTTPS деген не?", ru: "Что означает HTTPS?" },
+    options: [
+      { kz: "Тек домен атағы", ru: "Только имя домена" },
+      { kz: "Шифрланған HTTP", ru: "Защищённый HTTP" },
+      { kz: "Файл кеңейтімі", ru: "Расширение файла" },
+      { kz: "Пошта хаттамасы", ru: "Почтовый протокол" }
+    ],
+    correct: 1
+  },
+  {
+    text: { kz: "Excel-де B2 деген не?", ru: "В Excel ячейка B2 — это?" },
+    options: [
+      { kz: "Формула", ru: "Формула" },
+      { kz: "Баған B, 2-жол", ru: "Столбец B, строка 2" },
+      { kz: "Тек қана сандар", ru: "Только числа" },
+      { kz: "Кесте атауы", ru: "Имя таблицы" }
+    ],
+    correct: 1
+  },
+  {
+    text: { kz: "Бағдарламалауда цикл не істейді:", ru: "Что не характерно для цикла как такового (в общем виде)?" },
+    options: [
+      { kz: "Әрекеттерді қайталауы мүмкін", ru: "Может повторять действия" },
+      { kz: "Әрқашан тек бір рет орындау", ru: "Всегда выполняется только один раз" },
+      { kz: "Шарт бойынша қайталай алады", ru: "Может повторяться по условию" },
+      { kz: "Санауыш бойынша жүруі мүмкін", ru: "Может идти по счётчику" }
+    ],
+    correct: 1
+  },
+  {
+    text: { kz: "Компьютерлік вирус деген не?", ru: "Компьютерный вирус — это?" },
+    options: [
+      { kz: "Антивирус бағдарламасы", ru: "Антивирусная программа" },
+      { kz: "Өздігінен таралатын зиянды код", ru: "Вредоносный самовоспроизводящийся код" },
+      { kz: "Жад түрі", ru: "Тип памяти" },
+      { kz: "Принтер драйвері", ru: "Драйвер принтера" }
+    ],
+    correct: 1
+  },
+  {
+    text: { kz: "Операциялық жүйеге мысал:", ru: "Пример операционной системы:" },
+    options: [
+      { kz: "Microsoft Word", ru: "Microsoft Word" },
+      { kz: "Windows / Linux / macOS", ru: "Windows / Linux / macOS" },
+      { kz: "JPEG", ru: "JPEG" },
+      { kz: "HTML", ru: "HTML" }
+    ],
+    correct: 1
+  },
+  {
+    text: { kz: "Логикалық AND: 1 AND 0 нәтижесі", ru: "Логическое AND: результат 1 AND 0" },
+    options: [
+      { kz: "1", ru: "1" },
+      { kz: "0", ru: "0" },
+      { kz: "2", ru: "2" },
+      { kz: "10", ru: "10" }
+    ],
+    correct: 1
+  },
+  {
+    text: { kz: ".docx кеңейтімі қай форматқа жатады?", ru: "Расширение .docx относится к:" },
+    options: [
+      { kz: "Кескін", ru: "Изображение" },
+      { kz: "Мәтіндік құжат (Word)", ru: "Текстовый документ Word" },
+      { kz: "Бейне", ru: "Видео" },
+      { kz: "Кесте тек CSV", ru: "Только CSV" }
+    ],
+    correct: 1
+  }
+];
+
+let authEscapeHandler = null;
 
 const state = {
   lang: "kz",
   mobileMenuOpen: false,
   openDropdownIndex: null,
   cabinetMenuOpen: false,
+  /** @type {null | "register" | "login"} */
+  authModal: null,
   currentUser: null,
   chatSessionId: createSessionId(),
   chatMessages: [],
@@ -35,10 +147,10 @@ const DEFAULT_SCHEDULE_TEST = {
     kz: "Сізде белсенді жазылым жоқ. Төлем жасау немесе келісімшартқа отырып, қызметті белсендіріңіз. Телефон: +7 705 837 02 03",
     ru: "У вас нет активной подписки. Оплатите или заключите договор для активации. Телефон: +7 705 837 02 03"
   },
-  testTypePlaceholder: { kz: "ҰБТ", ru: "ЕНТ" },
+  testTypePlaceholder: { kz: "Тест түрі", ru: "Тип теста" },
   description: {
-    kz: "11 сынып түлектеріне арналған онлайн-тренажёр: 2025–2026 оқу жылына 16 000+ сұрақ (қазақ және орыс тілдерінде).",
-    ru: "Онлайн-тренажёр для выпускников 11 класса: более 16 000 вопросов на казахском и русском за 2025–2026 уч. год."
+    kz: "Пән бойынша тест: 10 сұрақ, автоматты тексеру. Қазіргі уақытта тек информатика. Таңдалған сынып пен оқушыларға жоспарлаңыз.",
+    ru: "Тест по предмету: 10 вопросов, автопроверка. Сейчас доступна только информатика. Назначьте выбранным классам и ученикам."
   },
   showAllDesc: { kz: "Барлық сипаттаманы көрсету", ru: "Показать всё описание" },
   howItWorks: { kz: "Бұл қалай жұмыс істейді?", ru: "Как это работает?" },
@@ -48,7 +160,10 @@ const DEFAULT_SCHEDULE_TEST = {
     students: { kz: "Барлық оқушылар", ru: "Все учащиеся" },
     language: { kz: "Тілі...", ru: "Язык..." },
     startTime: { kz: "Тест басталу уақыты", ru: "Время начала теста" },
-    availability: { kz: "Тестілеу қол жетімді болады", ru: "Тестирование будет доступно" }
+    availability: { kz: "Тестілеу қол жетімді болады", ru: "Тестирование будет доступно" },
+    subjectModeLabel: { kz: "Тест түрі", ru: "Тип теста" },
+    subjectWithInformatics: { kz: "Пән бойынша — Информатика (10 сұрақ)", ru: "По предмету — Информатика (10 вопросов)" },
+    informaticsOnlyHint: { kz: "Қазір тек информатика пәні қолжетімді.", ru: "Пока доступен только предмет «Информатика»." }
   },
   timeBlockTitle: { kz: "Өту уақытын тағайындау", ru: "Назначение времени прохождения" },
   timeBlockSubtitle: {
@@ -386,14 +501,17 @@ function renderFeatures(data) {
   return `<section class="section" id="features"><div class="container"><div class="section-title">${escapeHtml(sectionHeading)}</div><div class="grid">${cards}</div></div></section>`;
 }
 
-function renderAuthSection(data) {
-  return `<section class="section"><div class="container"><div class="auth-box fade-in" id="auth"><h3 class="section-title">${t(data.auth?.title)}</h3><p class="hero-subtitle">${t(data.auth?.subtitle)}</p><p class="hero-subtitle" style="margin-top:-8px;font-size:14px;">${state.lang === "kz" ? "Оқушы аккаунттары (мысал): G8iF34902@school4902 / 8177644" : "Пример ученика: G8iF34902@school4902 / 8177644"}</p><div class="auth-grid"><form class="auth-form" data-register-form><strong>${state.lang === "kz" ? "Тіркелу" : "Регистрация"}</strong><input class="input" name="fullName" placeholder="${state.lang === "kz" ? "Аты-жөні" : "ФИО"}" required><input class="input" name="email" type="email" placeholder="Email" required><input class="input" name="login" placeholder="Login" required><input class="input" name="password" type="password" placeholder="Password" required><input class="input" name="confirm" type="password" placeholder="${state.lang === "kz" ? "Құпиясөзді растау" : "Подтвердите пароль"}" required><button class="btn btn-primary" type="submit">${state.lang === "kz" ? "Тіркелу" : "Зарегистрироваться"}</button></form><form class="auth-form" data-login-form><strong>${state.lang === "kz" ? "Кіру" : "Вход"}</strong><input class="input" name="login" placeholder="Login" required><input class="input" name="password" type="password" placeholder="Password" required><button class="btn btn-primary" type="submit">${state.lang === "kz" ? "Кіру" : "Войти"}</button><small>${state.lang === "kz" ? "Әкімші: admin / admin" : "Админ: admin / admin"}</small></form></div></div></div></section>`;
+function renderAuthModal(data) {
+  if (!state.authModal) return "";
+  const kz = state.lang === "kz";
+  const regActive = state.authModal === "register";
+  const loginActive = state.authModal === "login";
+  return `<div class="auth-modal-overlay is-open" data-auth-modal-overlay tabindex="-1"><div class="auth-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title"><button type="button" class="auth-modal-close" data-auth-modal-close aria-label="${kz ? "Жабу" : "Закрыть"}">×</button><h3 class="auth-modal-title" id="auth-modal-title">${t(data.auth?.title)}</h3><p class="auth-modal-sub">${t(data.auth?.subtitle)}</p><p class="auth-modal-hint">${kz ? "Оқушы аккаунттары (мысал): G8iF34902@school4902 / 8177644" : "Пример ученика: G8iF34902@school4902 / 8177644"}</p><div class="auth-modal-tabs"><button type="button" class="auth-modal-tab ${regActive ? "is-active" : ""}" data-auth-tab="register">${kz ? "Тіркеу" : "Регистрация"}</button><button type="button" class="auth-modal-tab ${loginActive ? "is-active" : ""}" data-auth-tab="login">${kz ? "Кіру" : "Вход"}</button></div><div class="auth-modal-panels"><div class="auth-modal-panel ${regActive ? "is-active" : ""}" data-auth-panel="register"><form class="auth-form auth-form--modal" data-register-form><input class="input" name="fullName" placeholder="${kz ? "Аты-жөні" : "ФИО"}" required><input class="input" name="email" type="email" placeholder="Email" required><input class="input" name="login" placeholder="Login" required><input class="input" name="password" type="password" placeholder="Password" required><input class="input" name="confirm" type="password" placeholder="${kz ? "Құпиясөзді растау" : "Подтвердите пароль"}" required><button class="btn btn-primary" type="submit">${kz ? "Тіркелу" : "Зарегистрироваться"}</button></form></div><div class="auth-modal-panel ${loginActive ? "is-active" : ""}" data-auth-panel="login"><form class="auth-form auth-form--modal" data-login-form><input class="input" name="login" placeholder="Login" required><input class="input" name="password" type="password" placeholder="Password" required><button class="btn btn-primary" type="submit">${kz ? "Кіру" : "Войти"}</button><small>${kz ? "Әкімші: admin / admin" : "Админ: admin / admin"}</small></form></div></div></div></div>`;
 }
 
 function renderAiTutorSection(data) {
   const chat = state.chatMessages.map((m) => `<div class="chat-msg ${m.role}"><b>${m.role === "user" ? "You" : "AI"}:</b> ${escapeHtml(m.content)}</div>`).join("");
-  const apiKey = localStorage.getItem(STORAGE_KEYS.apiKey) ?? "";
-  return `<section class="section"><div class="container"><div class="chat-box fade-in" id="ai-tutor"><h3 class="section-title">${t(data.aiTutor?.title)}</h3><p class="hero-subtitle">${t(data.aiTutor?.subtitle)}</p><div class="chat-meta"><span>Session: ${escapeHtml(state.chatSessionId)}</span><button class="btn" type="button" data-new-chat>${state.lang === "kz" ? "Жаңа чат" : "Новый чат"}</button></div><div class="chat-settings"><input class="input" id="apiKey" placeholder="OpenAI API Key" value="${escapeAttr(apiKey)}"><input class="input" id="modelName" value="${escapeAttr(data.aiTutor?.model ?? "gpt-4o-mini")}"><button class="btn" type="button" data-save-key>${state.lang === "kz" ? "Сақтау" : "Сохранить"}</button></div><div class="chat-window" id="chatWindow">${chat || `<div class="chat-empty">${state.lang === "kz" ? "Сұрақ қойыңыз..." : "Задайте вопрос..."}</div>`}</div><form class="chat-form" data-chat-form><input class="input" name="message" placeholder="${state.lang === "kz" ? "Сұрағыңызды жазыңыз" : "Напишите вопрос"}" ${!state.currentUser ? "disabled" : ""} required><button class="btn btn-primary" type="submit" ${!state.currentUser ? "disabled" : ""}>${state.sending ? "..." : state.lang === "kz" ? "Жіберу" : "Отправить"}</button></form>${!state.currentUser ? `<small>${state.lang === "kz" ? "Чатқа кіру үшін алдымен аккаунтқа кіріңіз." : "Войдите в аккаунт, чтобы использовать чат."}</small>` : ""}</div></div></section>`;
+  return `<section class="section"><div class="container"><div class="chat-box fade-in" id="ai-tutor"><h3 class="section-title">${t(data.aiTutor?.title)}</h3><p class="hero-subtitle">${t(data.aiTutor?.subtitle)}</p><div class="chat-meta"><span>Session: ${escapeHtml(state.chatSessionId)}</span><button class="btn" type="button" data-new-chat>${state.lang === "kz" ? "Жаңа чат" : "Новый чат"}</button></div><div class="chat-window" id="chatWindow">${chat || `<div class="chat-empty">${state.lang === "kz" ? "Сұрақ қойыңыз..." : "Задайте вопрос..."}</div>`}</div><form class="chat-form" data-chat-form><input class="input" name="message" placeholder="${state.lang === "kz" ? "Сұрағыңызды жазыңыз" : "Напишите вопрос"}" ${!state.currentUser ? "disabled" : ""} required><button class="btn btn-primary" type="submit" ${!state.currentUser ? "disabled" : ""}>${state.sending ? "..." : state.lang === "kz" ? "Жіберу" : "Отправить"}</button></form>${!state.currentUser ? `<small>${state.lang === "kz" ? "Чатқа кіру үшін алдымен аккаунтқа кіріңіз." : "Войдите в аккаунт, чтобы использовать чат."}</small>` : ""}</div></div></section>`;
 }
 
 function renderFooter(data) {
@@ -403,10 +521,17 @@ function renderFooter(data) {
   return `<footer class="footer"><div class="container"><div class="footer-grid fade-in"><div><div class="footer-title">${t(data.footer?.contactsTitle)}</div><div class="contacts"><div><span>Phone:</span> ${escapeHtml(c.phone ?? "")}</div><div><span>Email:</span> ${escapeHtml(c.email ?? "")}</div><div><span>Work time:</span> ${escapeHtml(c.workTime ?? "")}</div></div></div><div><div class="footer-actions">${buttons}</div><div class="socials">${socials}</div></div></div><div class="fineprint">${escapeHtml(data.footer?.copyright ?? "")}</div></div></footer>`;
 }
 
-function getAdminSection(path) {
+function parseAdminRoute(path) {
   const parts = path.split("/").filter(Boolean);
-  if (parts[0] !== "admin") return "dashboard";
-  return parts[1] || "dashboard";
+  if (parts[0] !== "admin") return { section: "dashboard", resultDetail: null };
+  const s = parts[1] || "dashboard";
+  if (s === "results" && parts[2] === "detail" && parts[3] != null && parts[4] != null) {
+    return {
+      section: "results",
+      resultDetail: { scheduleId: decodeURIComponent(parts[3]), studentLogin: decodeURIComponent(parts[4]) }
+    };
+  }
+  return { section: s, resultDetail: null };
 }
 
 function renderAdminSidebar(data, active) {
@@ -470,6 +595,63 @@ function pushScheduledTest(entry) {
   }
   arr.push(entry);
   localStorage.setItem(STORAGE_KEYS.scheduledTests, JSON.stringify(arr));
+}
+
+function getScheduledTests() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.scheduledTests) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function getTestResultsList() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.testResults) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveTestResult(entry) {
+  const list = getTestResultsList();
+  if (list.some((x) => x.scheduleId === entry.scheduleId && x.studentLogin === entry.studentLogin)) return;
+  list.push(entry);
+  localStorage.setItem(STORAGE_KEYS.testResults, JSON.stringify(list));
+}
+
+function getResultByScheduleAndLogin(scheduleId, login) {
+  return getTestResultsList().find((r) => r.scheduleId === scheduleId && r.studentLogin === login);
+}
+
+/** HTML: разбор ответов по вопросам (информатика). `result.answers` — массив { selected, correct }. */
+function renderInformaticsResultBreakdownHTML(result, data) {
+  const sc = data.studentCabinet ?? {};
+  const answers = result?.answers;
+  if (!Array.isArray(answers) || answers.length !== INFORMATICS_QUESTIONS.length) {
+    return `<p class="hero-subtitle muted">${state.lang === "kz" ? "Сұрақ бойынша мәлімет жоқ (бұрынғы нәтиже)." : "Нет разбивки по вопросам (старый результат)."}</p>`;
+  }
+  return `<div class="result-breakdown">${INFORMATICS_QUESTIONS.map((q, i) => {
+    const a = answers[i];
+    const selected = a?.selected;
+    const correct = typeof a?.correct === "number" ? a.correct : q.correct;
+    const ok = selected != null && !Number.isNaN(Number(selected)) && Number(selected) === correct;
+    const selText = selected == null || Number.isNaN(Number(selected)) ? "—" : t(q.options[Number(selected)] ?? { kz: "?", ru: "?" });
+    const corText = t(q.options[correct] ?? { kz: "?", ru: "?" });
+    const badge = ok
+      ? `<span class="result-badge result-badge--ok">${t(sc.markCorrect ?? { kz: "Дұрыс", ru: "Верно" })}</span>`
+      : `<span class="result-badge result-badge--bad">${t(sc.markWrong ?? { kz: "Қате", ru: "Ошибка" })}</span>`;
+    return `<div class="result-breakdown-row ${ok ? "is-correct" : "is-wrong"}"><div class="result-breakdown-head"><span class="result-breakdown-n">${i + 1}</span>${badge}</div><div class="result-breakdown-q">${escapeHtml(t(q.text))}</div><div class="result-breakdown-answers"><div><span class="result-breakdown-label">${t(sc.yourAnswerLabel ?? { kz: "Сіздің жауабыңыз", ru: "Ваш ответ" })}:</span> ${escapeHtml(selText)}</div><div><span class="result-breakdown-label">${t(sc.correctAnswerLabel ?? { kz: "Дұрыс жауап", ru: "Верный ответ" })}:</span> ${escapeHtml(corText)}</div></div></div>`;
+  }).join("")}</div>`;
+}
+
+function studentAssignedToSchedule(entry, user) {
+  if (!user?.login || !entry?.studentLogins?.includes(user.login)) return false;
+  return entry.testType === "subject" && entry.subject === "informatics";
+}
+
+function getScheduledTestsForStudent(user) {
+  return getScheduledTests().filter((s) => studentAssignedToSchedule(s, user));
 }
 
 function scheduleGradeLabel(grade) {
@@ -549,7 +731,7 @@ function renderSchedulePage(data) {
   const eTime = Boolean(err.startTime);
   const eDur = Boolean(err.duration);
 
-  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(st.title)}</h1><div class="subscription-banner">${t(st.subscriptionBanner)}</div><div class="schedule-layout"><div class="schedule-cal"><div class="cal-head">${t(st.calendarMonth)}</div><div class="cal-weekdays">${weekLabels.map((w) => `<span>${w}</span>`).join("")}</div><div class="cal-grid">${grid}</div></div><div class="schedule-form-wrap"><form data-schedule-form class="schedule-form-inner" novalidate><div class="schedule-field"><label class="field-label" for="sched-type">${t(st.testTypePlaceholder)}</label><select class="input input--schedule" id="sched-type" name="testType"><option value="unt">ҰБТ / ЕНТ</option><option value="sor">СОР/СОЧ</option></select></div><p class="schedule-desc">${t(st.description)}</p><a href="#" class="schedule-link">${t(st.showAllDesc)} ${caretSvg()}</a><p class="schedule-how"><span class="play-ico">▶</span> ${t(st.howItWorks)}</p><div class="schedule-two-col schedule-pickers-row"><div class="schedule-field"><span class="field-label">${t(st.gradesLabel)}</span><div class="tag-field ${eGrades ? "is-invalid" : ""}"><div class="tag-list">${gradeTags}</div><select class="tag-field-add" data-add-grade aria-label="add-grade">${addGradeOpts}</select></div>${eGrades ? `<p class="field-error">${escapeHtml(t(st.errors?.classesField))}</p>` : ""}</div><div class="schedule-field"><span class="field-label">${t(st.lettersLabel)}</span><div class="tag-field tag-field--letter">${letterBlock}</div></div></div><div class="schedule-field schedule-field--block-students"><span class="field-label">${t(st.studentsLabel)}</span><div class="tag-field tag-field--tags-only ${eStudents ? "is-invalid" : ""}"><div class="tag-list">${studentTags || `<span class="tag-placeholder">${escapeHtml(t(st.fields?.students))}</span>`}</div></div>${eStudents ? `<p class="field-error">${escapeHtml(t(st.errors?.students))}</p>` : ""}<div class="student-list ${studentsDisabled ? "is-disabled" : ""}">${studs.length ? `${allRow}${studRows}` : studRows}</div><p class="form-hint">${escapeHtml(hint)}</p></div><div class="schedule-field"><label class="field-label" for="sched-lang">${t(st.fields?.language)}</label><select class="input input--schedule ${eLang ? "is-invalid" : ""}" id="sched-lang" name="language"><option value="">${escapeHtml(t(st.fields?.language))}</option><option value="kk">Қазақша</option><option value="ru">Орысша</option></select>${eLang ? `<p class="field-error">${escapeHtml(t(st.errors?.language))}</p>` : ""}</div><div class="schedule-time-section"><h3 class="schedule-section-heading">${escapeHtml(t(st.timeBlockTitle))}</h3><p class="schedule-section-sub">${escapeHtml(t(st.timeBlockSubtitle))}</p><div class="schedule-two-col schedule-two-col--bottom"><div class="schedule-field"><label class="field-label" for="sched-time">${t(st.fields?.startTime)}</label><input class="input input--schedule ${eTime ? "is-invalid" : ""}" id="sched-time" name="scheduleTime" type="time" value="${escapeAttr(state.scheduleStartTime)}" required />${eTime ? `<p class="field-error">${escapeHtml(t(st.errors?.startTime))}</p>` : ""}</div><div class="schedule-field"><label class="field-label" for="sched-dur">${t(st.fields?.availability)}</label><select class="input input--schedule ${eDur ? "is-invalid" : ""}" id="sched-dur" name="durationHours" aria-label="${escapeAttr(t(st.fields?.availability))}">${durOpts}</select>${eDur ? `<p class="field-error">${escapeHtml(t(st.errors?.duration))}</p>` : ""}</div></div></div><div class="schedule-actions"><button class="btn-schedule-cta" type="submit">${escapeHtml(t(st.submit) || (state.lang === "kz" ? "Жоспарлау" : "Запланировать"))}</button><button type="button" class="btn-schedule-preview" data-schedule-preview>${escapeHtml(
+  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(st.title)}</h1><div class="subscription-banner">${t(st.subscriptionBanner)}</div><div class="schedule-layout"><div class="schedule-cal"><div class="cal-head">${t(st.calendarMonth)}</div><div class="cal-weekdays">${weekLabels.map((w) => `<span>${w}</span>`).join("")}</div><div class="cal-grid">${grid}</div></div><div class="schedule-form-wrap"><form data-schedule-form class="schedule-form-inner" novalidate><div class="schedule-field"><span class="field-label">${t(st.fields?.subjectModeLabel || st.testTypePlaceholder)}</span><div class="schedule-readonly input input--schedule">${escapeHtml(t(st.fields?.subjectWithInformatics))}</div><input type="hidden" name="testType" value="subject" /><input type="hidden" name="subject" value="informatics" /><p class="form-hint schedule-subject-hint">${escapeHtml(t(st.fields?.informaticsOnlyHint))}</p></div><p class="schedule-desc">${t(st.description)}</p><a href="#" class="schedule-link">${t(st.showAllDesc)} ${caretSvg()}</a><p class="schedule-how"><span class="play-ico">▶</span> ${t(st.howItWorks)}</p><div class="schedule-two-col schedule-pickers-row"><div class="schedule-field"><span class="field-label">${t(st.gradesLabel)}</span><div class="tag-field ${eGrades ? "is-invalid" : ""}"><div class="tag-list">${gradeTags}</div><select class="tag-field-add" data-add-grade aria-label="add-grade">${addGradeOpts}</select></div>${eGrades ? `<p class="field-error">${escapeHtml(t(st.errors?.classesField))}</p>` : ""}</div><div class="schedule-field"><span class="field-label">${t(st.lettersLabel)}</span><div class="tag-field tag-field--letter">${letterBlock}</div></div></div><div class="schedule-field schedule-field--block-students"><span class="field-label">${t(st.studentsLabel)}</span><div class="tag-field tag-field--tags-only ${eStudents ? "is-invalid" : ""}"><div class="tag-list">${studentTags || `<span class="tag-placeholder">${escapeHtml(t(st.fields?.students))}</span>`}</div></div>${eStudents ? `<p class="field-error">${escapeHtml(t(st.errors?.students))}</p>` : ""}<div class="student-list ${studentsDisabled ? "is-disabled" : ""}">${studs.length ? `${allRow}${studRows}` : studRows}</div><p class="form-hint">${escapeHtml(hint)}</p></div><div class="schedule-field"><label class="field-label" for="sched-lang">${t(st.fields?.language)}</label><select class="input input--schedule ${eLang ? "is-invalid" : ""}" id="sched-lang" name="language"><option value="">${escapeHtml(t(st.fields?.language))}</option><option value="kk">Қазақша</option><option value="ru">Орысша</option></select>${eLang ? `<p class="field-error">${escapeHtml(t(st.errors?.language))}</p>` : ""}</div><div class="schedule-time-section"><h3 class="schedule-section-heading">${escapeHtml(t(st.timeBlockTitle))}</h3><p class="schedule-section-sub">${escapeHtml(t(st.timeBlockSubtitle))}</p><div class="schedule-two-col schedule-two-col--bottom"><div class="schedule-field"><label class="field-label" for="sched-time">${t(st.fields?.startTime)}</label><input class="input input--schedule ${eTime ? "is-invalid" : ""}" id="sched-time" name="scheduleTime" type="time" value="${escapeAttr(state.scheduleStartTime)}" required />${eTime ? `<p class="field-error">${escapeHtml(t(st.errors?.startTime))}</p>` : ""}</div><div class="schedule-field"><label class="field-label" for="sched-dur">${t(st.fields?.availability)}</label><select class="input input--schedule ${eDur ? "is-invalid" : ""}" id="sched-dur" name="durationHours" aria-label="${escapeAttr(t(st.fields?.availability))}">${durOpts}</select>${eDur ? `<p class="field-error">${escapeHtml(t(st.errors?.duration))}</p>` : ""}</div></div></div><div class="schedule-actions"><button class="btn-schedule-cta" type="submit">${escapeHtml(t(st.submit) || (state.lang === "kz" ? "Жоспарлау" : "Запланировать"))}</button><button type="button" class="btn-schedule-preview" data-schedule-preview>${escapeHtml(
     t(st.previewButton) || (state.lang === "kz" ? "Өзіңіз көру (алдын ала қарау)" : "Попробовать самому (предпросмотр)")
   )}</button></div></form></div></div></div>`;
 }
@@ -582,7 +764,23 @@ function renderAccountsPage(data) {
 function renderResultsPage(data) {
   const rp = data.resultsPage ?? {};
   const tabs = (rp.tabs ?? []).map((tab) => `<button type="button" class="results-tab ${state.resultsTab === tab.id ? "is-active" : ""}" data-results-tab="${tab.id}">${t(tab.label)}</button>`).join("");
-  const rows = (rp.rows ?? [])
+  const stored = getTestResultsList();
+  const detailLabel = t(rp.viewDetail ?? { kz: "Толығырақ", ru: "Подробнее" });
+  const storedRows = stored
+    .map((r) => {
+      const statusText = state.lang === "kz" ? "Тапсырылды" : "Сдано";
+      const href = `#/admin/results/detail/${encodeURIComponent(r.scheduleId)}/${encodeURIComponent(r.studentLogin)}`;
+      return `<tr>
+        <td>${escapeHtml(r.fullName)}</td>
+        <td>${escapeHtml(state.lang === "kz" ? "Информатика" : "Информатика")}</td>
+        <td>${escapeHtml(`${r.score}/${r.maxScore}`)}</td>
+        <td>${escapeHtml(formatIsoDate(r.submittedAt))}</td>
+        <td><a class="btn btn-primary results-detail-btn" href="${href}">${escapeHtml(detailLabel)}</a></td>
+        <td class="muted">${statusText}</td>
+      </tr>`;
+    })
+    .join("");
+  const demoRows = (rp.rows ?? [])
     .map((row) => {
       const statusText = row.status === "not_started" ? t(rp.notStarted) : escapeHtml(row.status || "");
       return `<tr>
@@ -595,7 +793,11 @@ function renderResultsPage(data) {
       </tr>`;
     })
     .join("");
-  return `<div class="admin-page fade-in results-page"><div class="results-meta"><h1 class="results-meta-title">${t(rp.title)}</h1><div class="results-meta-sub">${t(rp.school)}</div><div class="results-meta-line"><span class="badge-grade">${t(rp.gradeLine)}</span></div><p class="results-meta-desc">${t(rp.details)}</p><p class="results-meta-time">🕐 ${escapeHtml(rp.scheduledAt)}</p></div><div class="results-tabs">${tabs}</div><div class="table-wrap"><table class="data-table results-table"><thead><tr>
+  const rows = stored.length ? storedRows : demoRows;
+  const notice = stored.length
+    ? `<p class="results-storage-note">${state.lang === "kz" ? "Кесте: информатика тестінің нақты нәтижелері (localStorage)." : "Таблица: реальные результаты теста по информатике (localStorage)."}</p>`
+    : "";
+  return `<div class="admin-page fade-in results-page"><div class="results-meta"><h1 class="results-meta-title">${t(rp.title)}</h1><div class="results-meta-sub">${t(rp.school)}</div><div class="results-meta-line"><span class="badge-grade">${t(rp.gradeLine)}</span></div><p class="results-meta-desc">${t(rp.details)}</p><p class="results-meta-time">🕐 ${escapeHtml(rp.scheduledAt)}</p></div>${notice}<div class="results-tabs">${tabs}</div><div class="table-wrap"><table class="data-table results-table"><thead><tr>
     <th>${t(rp.columns?.name)}</th>
     <th>${t(rp.columns?.subject)}</th>
     <th>${t(rp.columns?.total)}</th>
@@ -610,7 +812,22 @@ function renderAdminDashboard(data) {
   return `<div class="admin-page fade-in"><div class="admin-profile"><div class="admin-avatar"></div><div><div class="admin-org">${t(ac.orgLabel)}</div><h2 class="admin-school">${t(ac.schoolName)}</h2></div></div><p class="hero-subtitle">${state.lang === "kz" ? "Тестілеуді жоспарлау, тест құрастыру, оқушылар және қорытындылар бөлімдерін таңдаңыз." : "Выберите раздел: планирование теста, конструктор, учащиеся или результаты."}</p><div class="dashboard-cards"><a class="dashboard-card" href="#/admin/schedule"><h3>${t({ kz: "Тестті жоспарлау", ru: "Планирование теста" })}</h3></a><a class="dashboard-card" href="#/admin/testBuilder"><h3>${t({ kz: "Тест құрастырушы", ru: "Конструктор тестов" })}</h3></a><a class="dashboard-card" href="#/admin/accounts"><h3>${t({ kz: "Оқушылар", ru: "Учащиеся" })}</h3></a><a class="dashboard-card" href="#/admin/results"><h3>${t({ kz: "Қорытындылар", ru: "Результаты" })}</h3></a></div></div>`;
 }
 
-function renderAdminMain(data, section) {
+function renderAdminResultDetailPage(data, scheduleId, studentLogin) {
+  const rp = data.resultsPage ?? {};
+  const sc = data.studentCabinet ?? {};
+  const result = getTestResultsList().find((r) => r.scheduleId === scheduleId && r.studentLogin === studentLogin);
+  if (!result) {
+    return `<div class="admin-page fade-in"><p class="hero-subtitle">${t(rp.resultNotFound ?? { kz: "Нәтиже табылмады.", ru: "Результат не найден." })}</p><p><a class="btn btn-primary" href="#/admin/results">${t(rp.backToList ?? { kz: "Тізімге", ru: "К списку" })}</a></p></div>`;
+  }
+  const schedule = getScheduledTests().find((s) => s.id === scheduleId);
+  const dateLine = schedule?.calendarDate ? `${state.lang === "kz" ? "Күні: " : "Дата: "}${escapeHtml(schedule.calendarDate)}` : "";
+  return `<div class="admin-page fade-in"><a class="student-test-back" href="#/admin/results">${t(rp.backToList ?? { kz: "← Қорытындылар", ru: "← К результатам" })}</a><h1 class="admin-page-title">${escapeHtml(result.fullName)}</h1><p class="hero-subtitle"><code>${escapeHtml(result.studentLogin)}</code>${dateLine ? ` · ${dateLine}` : ""}</p><p class="student-result-score">${t(sc.scoreLabel)}: <strong>${result.score}/${result.maxScore}</strong></p><p class="hero-subtitle muted">${escapeHtml(formatIsoDate(result.submittedAt))}</p><h2 class="student-tests-heading">${t(rp.detailAnswersHeading ?? { kz: "Жауаптар", ru: "Ответы по вопросам" })}</h2>${renderInformaticsResultBreakdownHTML(result, data)}</div>`;
+}
+
+function renderAdminMain(data, section, resultDetail) {
+  if (section === "results" && resultDetail) {
+    return renderAdminResultDetailPage(data, resultDetail.scheduleId, resultDetail.studentLogin);
+  }
   switch (section) {
     case "schedule":
       return renderSchedulePage(data);
@@ -627,19 +844,77 @@ function renderAdminMain(data, section) {
 
 function renderAdminShell(data) {
   const path = parseRoute();
-  const section = getAdminSection(path);
+  const { section, resultDetail } = parseAdminRoute(path);
   const bc = `${t(data.adminCabinet?.breadcrumbHome)} / ${t(data.adminCabinet?.sidebar?.find((s) => s.id === section)?.label ?? data.adminCabinet?.sidebar?.[0]?.label)}`;
-  return `${renderHeader(data)}<div class="admin-layout"><div class="container admin-layout-inner">${renderAdminSidebar(data, section)}<main class="admin-main"><div class="breadcrumb">${bc}</div>${renderAdminMain(data, section)}</main></div></div>${renderFooter(data)}`;
+  return `${renderHeader(data)}<div class="admin-layout"><div class="container admin-layout-inner">${renderAdminSidebar(data, section)}<main class="admin-main"><div class="breadcrumb">${bc}</div>${renderAdminMain(data, section, resultDetail)}</main></div></div>${renderFooter(data)}`;
+}
+
+function formatIsoDate(iso) {
+  try {
+    return new Date(iso).toLocaleString(state.lang === "kz" ? "kk-KZ" : "ru-RU");
+  } catch {
+    return String(iso || "");
+  }
+}
+
+function renderStudentDashboardContent(data) {
+  const sc = data.studentCabinet ?? {};
+  const user = state.currentUser;
+  const list = getScheduledTestsForStudent(user);
+  const cards = list
+    .map((s) => {
+      const done = getResultByScheduleAndLogin(s.id, user.login);
+      const meta = `${escapeHtml(s.calendarDate)} · ${done ? escapeHtml(t(sc.statusCompleted)) : escapeHtml(t(sc.statusPending))}`;
+      const actions = done
+        ? `<span class="student-test-score">${escapeHtml(t(sc.scoreShort))}: <strong>${done.score}/${done.maxScore}</strong></span> <a class="btn" href="#/student/test/${encodeURIComponent(s.id)}">${t(sc.viewResult)}</a>`
+        : `<a class="btn btn-primary" href="#/student/test/${encodeURIComponent(s.id)}">${t(sc.openTest)}</a>`;
+      return `<div class="student-test-card"><div class="student-test-card-head"><span class="student-test-card-title">${escapeHtml(t(sc.subjectInformatics))}</span>${meta}</div>${actions}</div>`;
+    })
+    .join("");
+
+  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(sc.title)}</h1><p class="hero-subtitle">${t(sc.welcome)}</p><p class="hero-subtitle"><strong>${escapeHtml(user?.fullName || "")}</strong> · ${escapeHtml(user?.login || "")}</p><h2 class="student-tests-heading">${t(sc.scheduledTestsHeading)}</h2>${
+    cards ? `<div class="student-tests-grid">${cards}</div>` : `<p class="hero-subtitle muted">${t(sc.noScheduledTests)}</p>`
+  }</div>`;
+}
+
+function renderStudentTestPage(data, scheduleId) {
+  const sc = data.studentCabinet ?? {};
+  const user = state.currentUser;
+  const schedule = getScheduledTests().find((s) => s.id === scheduleId);
+  if (!schedule) {
+    return `<div class="admin-page fade-in"><p class="hero-subtitle">${t(sc.testNotFound)}</p><p><a class="btn btn-primary" href="#/student">${t(sc.back)}</a></p></div>`;
+  }
+  if (!studentAssignedToSchedule(schedule, user)) {
+    return `<div class="admin-page fade-in"><p class="hero-subtitle">${t(sc.testAccessDenied)}</p><p><a class="btn btn-primary" href="#/student">${t(sc.back)}</a></p></div>`;
+  }
+  const existing = getResultByScheduleAndLogin(scheduleId, user.login);
+  if (existing) {
+    const breakdownTitle = t(sc.resultBreakdownHeading ?? { kz: "Сұрақтар бойынша", ru: "По вопросам" });
+    return `<div class="admin-page fade-in"><a class="student-test-back" href="#/student">${t(sc.back)}</a><h1 class="admin-page-title">${t(sc.resultTitle)}</h1><p class="student-result-score">${t(sc.scoreLabel)}: <strong>${existing.score}/${existing.maxScore}</strong></p><p class="hero-subtitle">${escapeHtml(formatIsoDate(existing.submittedAt))}</p><h2 class="student-tests-heading">${escapeHtml(breakdownTitle)}</h2>${renderInformaticsResultBreakdownHTML(existing, data)}</div>`;
+  }
+
+  const qs = INFORMATICS_QUESTIONS.map((q, i) => {
+    const opts = q.options
+      .map(
+        (opt, j) =>
+          `<label class="student-test-opt"><input type="radio" name="q${i}" value="${j}" required /> <span>${escapeHtml(t(opt))}</span></label>`
+      )
+      .join("");
+    return `<div class="student-test-q"><div class="student-test-qtext">${i + 1}. ${escapeHtml(t(q.text))}</div><div class="student-test-opts">${opts}</div></div>`;
+  }).join("");
+
+  return `<div class="admin-page fade-in"><a class="student-test-back" href="#/student">${t(sc.back)}</a><h1 class="admin-page-title">${t(sc.takeTestTitle)}</h1><p class="hero-subtitle">${t(sc.informaticsTen)}</p><form data-student-test-form data-schedule-id="${escapeAttr(scheduleId)}">${qs}<button class="btn btn-primary student-test-submit" type="submit">${t(sc.submitTest)}</button></form></div>`;
 }
 
 function renderStudentShell(data) {
-  const sc = data.studentCabinet ?? {};
-  const main = `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(sc.title)}</h1><p class="hero-subtitle">${t(sc.welcome)}</p><p class="hero-subtitle"><strong>${escapeHtml(state.currentUser?.fullName || "")}</strong> · ${escapeHtml(state.currentUser?.login || "")}</p></div>`;
-  return `${renderHeader(data)}<div class="admin-layout"><div class="container admin-layout-inner"><main class="admin-main admin-main--full">${main}</main></div></div>${renderFooter(data)}`;
+  const path = parseRoute();
+  const segs = path.split("/").filter(Boolean);
+  const inner = segs[1] === "test" && segs[2] ? renderStudentTestPage(data, decodeURIComponent(segs[2])) : renderStudentDashboardContent(data);
+  return `${renderHeader(data)}<div class="admin-layout"><div class="container admin-layout-inner"><main class="admin-main admin-main--full">${inner}</main></div></div>${renderFooter(data)}`;
 }
 
 function renderLanding(data) {
-  return `${renderHeader(data)}<main>${renderHero(data)}${renderFeatures(data)}${renderAuthSection(data)}${renderAiTutorSection(data)}</main>${renderFooter(data)}`;
+  return `${renderHeader(data)}<main>${renderHero(data)}${renderFeatures(data)}${renderAiTutorSection(data)}</main>${renderFooter(data)}${renderAuthModal(data)}`;
 }
 
 function renderApp(data) {
@@ -663,13 +938,16 @@ function renderApp(data) {
   }
 
   if (state.currentUser?.role === "admin" && segments[0] === "admin") {
+    state.authModal = null;
     app.innerHTML = renderAdminShell(data);
   } else if (state.currentUser && state.currentUser.role === "student" && segments[0] === "student") {
+    state.authModal = null;
     app.innerHTML = renderStudentShell(data);
   } else {
     app.innerHTML = renderLanding(data);
   }
 
+  document.body.style.overflow = state.authModal ? "hidden" : "";
   document.documentElement.lang = state.lang === "kz" ? "kk" : "ru";
   attachEvents(data);
 }
@@ -707,17 +985,27 @@ function formatOpenAIChatError(status, apiDetail) {
     : `Ошибка сервера (${status})${detail ? `: ${detail}` : ""}`;
 }
 
+function getOpenAIApiKey(data) {
+  const fromData = String(data?.aiTutor?.apiKey ?? "").trim();
+  if (fromData) return fromData;
+  return String(localStorage.getItem(STORAGE_KEYS.apiKey) ?? "").trim();
+}
+
 async function sendChatMessage(data, message) {
-  const key = localStorage.getItem(STORAGE_KEYS.apiKey);
+  const key = getOpenAIApiKey(data);
   if (!key) {
-    alert(state.lang === "kz" ? "OpenAI API кілтін енгізіп, «Сақтау» басыңыз." : "Введите ключ OpenAI API и нажмите «Сохранить».");
+    alert(
+      state.lang === "kz"
+        ? "OpenAI API кілті жоқ: data.json → aiTutor.apiKey немесе localStorage (edumetrics:apiKey)."
+        : "Нет ключа OpenAI: укажите data.json → aiTutor.apiKey или localStorage (edumetrics:apiKey)."
+    );
     return;
   }
   state.sending = true;
   state.chatMessages.push({ role: "user", content: message });
   renderApp(data);
   try {
-    const model = document.getElementById("modelName")?.value?.trim() || data.aiTutor?.model || "gpt-4o-mini";
+    const model = (data.aiTutor?.model || "gpt-4o-mini").trim();
     const endpoint = data.aiTutor?.endpoint || "https://api.openai.com/v1/chat/completions";
     const payload = {
       model,
@@ -765,6 +1053,11 @@ async function sendChatMessage(data, message) {
 }
 
 function attachEvents(data) {
+  if (authEscapeHandler) {
+    document.removeEventListener("keydown", authEscapeHandler);
+    authEscapeHandler = null;
+  }
+
   document.querySelector("[data-burger]")?.addEventListener("click", () => {
     state.mobileMenuOpen = !state.mobileMenuOpen;
     renderApp(data);
@@ -783,9 +1076,18 @@ function attachEvents(data) {
     el.addEventListener("click", (e) => {
       e.preventDefault();
       const id = el.getAttribute("data-action");
-      if (id === "signup") return scrollToId("auth");
-      if (id === "login") return scrollToId("auth");
+      if (id === "signup") {
+        state.authModal = "register";
+        state.mobileMenuOpen = false;
+        return renderApp(data);
+      }
+      if (id === "login") {
+        state.authModal = "login";
+        state.mobileMenuOpen = false;
+        return renderApp(data);
+      }
       if (id === "home" || id === "logo") {
+        state.authModal = null;
         navigate("/");
         return renderApp(data);
       }
@@ -810,8 +1112,38 @@ function attachEvents(data) {
   });
 
   document.querySelectorAll("[data-hero-btn]").forEach((btn) => {
-    btn.addEventListener("click", () => scrollToId("auth"));
+    btn.addEventListener("click", () => scrollToId("features"));
   });
+
+  const closeAuthModal = () => {
+    if (!state.authModal) return;
+    state.authModal = null;
+    renderApp(data);
+  };
+
+  document.querySelector("[data-auth-modal-overlay]")?.addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) closeAuthModal();
+  });
+  document.querySelector("[data-auth-modal-close]")?.addEventListener("click", () => closeAuthModal());
+  document.querySelectorAll("[data-auth-tab]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const tab = el.getAttribute("data-auth-tab");
+      if (tab === "register" || tab === "login") {
+        state.authModal = tab;
+        renderApp(data);
+      }
+    });
+  });
+
+  if (state.authModal) {
+    authEscapeHandler = (e) => {
+      if (e.key !== "Escape") return;
+      document.removeEventListener("keydown", authEscapeHandler);
+      authEscapeHandler = null;
+      closeAuthModal();
+    };
+    document.addEventListener("keydown", authEscapeHandler);
+  }
 
   const demoFullProductMessage = (label) =>
     state.lang === "kz"
@@ -857,6 +1189,8 @@ function attachEvents(data) {
     saveUsers(users);
     alert(state.lang === "kz" ? "Тіркелу сәтті!" : "Регистрация успешна!");
     form.reset();
+    state.authModal = null;
+    renderApp(data);
   });
 
   document.querySelector("[data-login-form]")?.addEventListener("submit", (e) => {
@@ -880,13 +1214,6 @@ function attachEvents(data) {
     renderApp(data);
   });
 
-  document.querySelector("[data-save-key]")?.addEventListener("click", () => {
-    const key = document.getElementById("apiKey")?.value?.trim();
-    if (!key) return alert("Empty key");
-    localStorage.setItem(STORAGE_KEYS.apiKey, key);
-    alert("API key saved");
-  });
-
   document.querySelector("[data-new-chat]")?.addEventListener("click", () => {
     state.chatSessionId = createSessionId();
     state.chatMessages = [];
@@ -899,6 +1226,40 @@ function attachEvents(data) {
     if (!message) return;
     e.currentTarget.reset();
     await sendChatMessage(data, message);
+  });
+
+  document.querySelector("[data-student-test-form]")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const sid = form.getAttribute("data-schedule-id");
+    const user = state.currentUser;
+    if (!sid || !user || user.role !== "student") return;
+    let score = 0;
+    const fd = new FormData(form);
+    const answers = INFORMATICS_QUESTIONS.map((q, i) => {
+      const raw = fd.get(`q${i}`);
+      const n = raw === null || raw === "" ? null : Number(raw);
+      return {
+        selected: Number.isNaN(n) ? null : n,
+        correct: q.correct
+      };
+    });
+    INFORMATICS_QUESTIONS.forEach((q, i) => {
+      const v = answers[i].selected;
+      if (v != null && !Number.isNaN(v) && v === q.correct) score++;
+    });
+    const maxScore = INFORMATICS_QUESTIONS.length;
+    saveTestResult({
+      scheduleId: sid,
+      studentLogin: user.login,
+      fullName: user.fullName || user.login,
+      score,
+      maxScore,
+      submittedAt: new Date().toISOString(),
+      answers
+    });
+    navigate(`/student/test/${encodeURIComponent(sid)}`);
+    renderApp(data);
   });
 
   document.querySelectorAll("[data-cal-date]").forEach((btn) => {
@@ -991,6 +1352,7 @@ function attachEvents(data) {
       const st = data.scheduleTest ?? {};
       const preview =
         `${t({ kz: "Алдын ала қарау", ru: "Предпросмотр" })}\n\n` +
+        `${t(st.fields?.subjectWithInformatics)}\n` +
         `${t({ kz: "Күн", ru: "Дата" })}: ${state.scheduleSelectedDate}\n` +
         `${t(st.gradesLabel)}: ${state.scheduleDraft.selectedGrades.map(scheduleGradeLabel).join(", ") || "—"}\n` +
         `${t(st.lettersLabel)}: ${state.scheduleDraft.selectedLetter || t(st.fields?.letters)}\n` +
@@ -1024,7 +1386,9 @@ function attachEvents(data) {
       id: createSessionId(),
       createdAt: new Date().toISOString(),
       calendarDate: state.scheduleSelectedDate,
-      testType: String(fd.get("testType") || ""),
+      testType: String(fd.get("testType") || "subject"),
+      subject: String(fd.get("subject") || "informatics"),
+      questionCount: INFORMATICS_QUESTIONS.length,
       grades: [...state.scheduleDraft.selectedGrades],
       letter: state.scheduleDraft.selectedLetter || null,
       studentLogins: [...state.scheduleDraft.selectedStudentLogins],
