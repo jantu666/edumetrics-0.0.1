@@ -1,19 +1,23 @@
-const STORAGE_KEYS = {
+﻿const STORAGE_KEYS = {
   data: "edumetrics:data",
   users: "edumetrics:users",
   user: "edumetrics:user",
   apiKey: "edumetrics:apiKey",
   savedTests: "edumetrics:savedTests",
   scheduledTests: "edumetrics:scheduledTests",
-  testResults: "edumetrics:testResults"
+  testResults: "edumetrics:testResults",
+  lang: "edumetrics:lang",
+  themeMode: "edumetrics:themeMode"
 };
 
-/** 10 вопросов по информатике (автопроверка по индексу correct) */
+/** 25 школьных вопросов по информатике (автопроверка). topic — тема для отчёта «повторить / усвоение». */
 const INFORMATICS_QUESTIONS = [
   {
+    topicKey: "hardware",
+    topic: { kz: "Компьютер құрылғысы", ru: "Аппаратное обеспечение ПК" },
     text: {
-      kz: "Құрамдас бөліктер: процессор, жад, диск жинақталған құрылғы не?",
-      ru: "Устройство, объединяющее процессор, память и накопители — это?"
+      kz: "Процессор, жедел жад және диск біріктірілген негізгі құрылғы қалай аталады?",
+      ru: "Как называется корпус, объединяющий процессор, память и накопители?"
     },
     options: [
       { kz: "Перифериялық құрылғы", ru: "Периферийное устройство" },
@@ -24,7 +28,9 @@ const INFORMATICS_QUESTIONS = [
     correct: 1
   },
   {
-    text: { kz: "Екілік 101₂ сандар жүйесінде неге тең?", ru: "Чему равно двоичное число 101₂?" },
+    topicKey: "number_systems",
+    topic: { kz: "Сандар жүйелері", ru: "Системы счисления" },
+    text: { kz: "Екілік 101₂ ондықта неге тең?", ru: "Чему равно двоичное число 101₂ в десятичной системе?" },
     options: [
       { kz: "5", ru: "5" },
       { kz: "7", ru: "7" },
@@ -34,16 +40,20 @@ const INFORMATICS_QUESTIONS = [
     correct: 0
   },
   {
-    text: { kz: "Операциялық жүйенің міндеті емес:", ru: "Что не является функцией операционной системы?" },
+    topicKey: "systems_software",
+    topic: { kz: "Жүйелік және қолданбалы БҚ", ru: "Системное и прикладное ПО" },
+    text: { kz: "ОС міндеті емес нәрсе:", ru: "Что не относится к функции операционной системы?" },
     options: [
       { kz: "Ресурстарды басқару", ru: "Управление ресурсами" },
-      { kz: "Текстті форматтау (Word-та)", ru: "Форматирование текста в Word" },
+      { kz: "Word-та мәтінді форматтау", ru: "Форматирование текста в Word" },
       { kz: "Файлдармен жұмыс", ru: "Работа с файлами" },
-      { kz: "Қолданбаларды іске қосу", ru: "Запуск программ" }
+      { kz: "Бағдарламаларды іске қосу", ru: "Запуск программ" }
     ],
     correct: 1
   },
   {
+    topicKey: "networks",
+    topic: { kz: "Желілер және интернет", ru: "Сети и Интернет" },
     text: { kz: "HTTPS деген не?", ru: "Что означает HTTPS?" },
     options: [
       { kz: "Тек домен атағы", ru: "Только имя домена" },
@@ -54,6 +64,8 @@ const INFORMATICS_QUESTIONS = [
     correct: 1
   },
   {
+    topicKey: "office_apps",
+    topic: { kz: "Мәтіндік редактор және электрондық кесте", ru: "Текстовый редактор и электронные таблицы" },
     text: { kz: "Excel-де B2 деген не?", ru: "В Excel ячейка B2 — это?" },
     options: [
       { kz: "Формула", ru: "Формула" },
@@ -64,16 +76,20 @@ const INFORMATICS_QUESTIONS = [
     correct: 1
   },
   {
-    text: { kz: "Бағдарламалауда цикл не істейді:", ru: "Что не характерно для цикла как такового (в общем виде)?" },
+    topicKey: "algorithms",
+    topic: { kz: "Алгоритмдер", ru: "Алгоритмы" },
+    text: { kz: "Циклдің сипатына сәйкес емес:", ru: "Что не характерно для цикла?" },
     options: [
       { kz: "Әрекеттерді қайталауы мүмкін", ru: "Может повторять действия" },
-      { kz: "Әрқашан тек бір рет орындау", ru: "Всегда выполняется только один раз" },
-      { kz: "Шарт бойынша қайталай алады", ru: "Может повторяться по условию" },
+      { kz: "Әрқашан бір рет орындалады", ru: "Всегда выполняется один раз" },
+      { kz: "Шарт бойынша қайталанады", ru: "Может повторяться по условию" },
       { kz: "Санауыш бойынша жүруі мүмкін", ru: "Может идти по счётчику" }
     ],
     correct: 1
   },
   {
+    topicKey: "infosec",
+    topic: { kz: "Ақпараттық қауіпсіздік", ru: "Информационная безопасность" },
     text: { kz: "Компьютерлік вирус деген не?", ru: "Компьютерный вирус — это?" },
     options: [
       { kz: "Антивирус бағдарламасы", ru: "Антивирусная программа" },
@@ -84,7 +100,9 @@ const INFORMATICS_QUESTIONS = [
     correct: 1
   },
   {
-    text: { kz: "Операциялық жүйеге мысал:", ru: "Пример операционной системы:" },
+    topicKey: "systems_software",
+    topic: { kz: "Жүйелік және қолданбалы БҚ", ru: "Системное и прикладное ПО" },
+    text: { kz: "ОЖ мысалы:", ru: "Пример операционной системы:" },
     options: [
       { kz: "Microsoft Word", ru: "Microsoft Word" },
       { kz: "Windows / Linux / macOS", ru: "Windows / Linux / macOS" },
@@ -94,6 +112,8 @@ const INFORMATICS_QUESTIONS = [
     correct: 1
   },
   {
+    topicKey: "logic_bool",
+    topic: { kz: "Логика", ru: "Логика" },
     text: { kz: "Логикалық AND: 1 AND 0 нәтижесі", ru: "Логическое AND: результат 1 AND 0" },
     options: [
       { kz: "1", ru: "1" },
@@ -104,6 +124,8 @@ const INFORMATICS_QUESTIONS = [
     correct: 1
   },
   {
+    topicKey: "office_apps",
+    topic: { kz: "Мәтіндік редактор және электрондық кесте", ru: "Текстовый редактор и электронные таблицы" },
     text: { kz: ".docx кеңейтімі қай форматқа жатады?", ru: "Расширение .docx относится к:" },
     options: [
       { kz: "Кескін", ru: "Изображение" },
@@ -112,45 +134,251 @@ const INFORMATICS_QUESTIONS = [
       { kz: "Кесте тек CSV", ru: "Только CSV" }
     ],
     correct: 1
+  },
+  {
+    topicKey: "hardware",
+    topic: { kz: "Компьютер құрылғысы", ru: "Аппаратное обеспечение ПК" },
+    text: { kz: "Жедел жад (RAM) не үшін қолданылады?", ru: "Для чего нужна оперативная память (RAM)?" },
+    options: [
+      { kz: "Файлдарды ұзақ сақтау", ru: "Долговременное хранение файлов" },
+      { kz: "Іске қосылған бағдарламалар мен деректерді уақытша сақтау", ru: "Временное хранение данных запущенных программ" },
+      { kz: "Тек бейне көрсету", ru: "Только вывод видео" },
+      { kz: "Тек пернетақта", ru: "Только клавиатура" }
+    ],
+    correct: 1
+  },
+  {
+    topicKey: "hardware",
+    topic: { kz: "Компьютер құрылғысы", ru: "Аппаратное обеспечение ПК" },
+    text: { kz: "CPU (процессор) не істейді?", ru: "Что выполняет центральный процессор (CPU)?" },
+    options: [
+      { kz: "Есептеу және басқару командалары", ru: "Вычисления и выполнение команд" },
+      { kz: "Тек дыбыс шығару", ru: "Только вывод звука" },
+      { kz: "Интернет кабелін қосу", ru: "Подключение кабеля Интернет" },
+      { kz: "Күшті құпия сөз ойлап табу", ru: "Придумывание паролей" }
+    ],
+    correct: 0
+  },
+  {
+    topicKey: "hardware",
+    topic: { kz: "Компьютер құрылғысы", ru: "Аппаратное обеспечение ПК" },
+    text: { kz: "Тінтуір қай санатқа жатады?", ru: "К какому типу относится мышь?" },
+    options: [
+      { kz: "Кіріс құрылғысы", ru: "Входное устройство" },
+      { kz: "Шығыс құрылғысы", ru: "Выходное устройство" },
+      { kz: "Жад", ru: "Память" },
+      { kz: "Процессор", ru: "Процессор" }
+    ],
+    correct: 0
+  },
+  {
+    topicKey: "networks",
+    topic: { kz: "Желілер және интернет", ru: "Сети и Интернет" },
+    text: { kz: "Жергілікті желі (LAN) деген не?", ru: "Что такое локальная сеть (LAN)?" },
+    options: [
+      { kz: "Бір ғимарат/аймақтағы компьютерлерді байланыстыру", ru: "Связь компьютеров в здании или на небольшой территории" },
+      { kz: "Тек пошта жіберу", ru: "Только отправка почты" },
+      { kz: "Тек бейне файл", ru: "Только видеофайл" },
+      { kz: "Тек антивирус", ru: "Только антивирус" }
+    ],
+    correct: 0
+  },
+  {
+    topicKey: "infosec",
+    topic: { kz: "Ақпараттық қауіпсіздік", ru: "Информационная безопасность" },
+    text: { kz: "Қауіпсіз құпия сөз қайсысы?", ru: "Какой пароль наиболее надёжный?" },
+    options: [
+      { kz: "Ұзын, әріп пен сандар аралас", ru: "Длинный, с буквами и цифрами" },
+      { kz: "Туған күн", ru: "Дата рождения" },
+      { kz: "password", ru: "password" },
+      { kz: "1234", ru: "1234" }
+    ],
+    correct: 0
+  },
+  {
+    topicKey: "www_web",
+    topic: { kz: "WWW және веб-технологиялар", ru: "WWW и веб-технологии" },
+    text: { kz: "Интернеттегі сайт мекенжайы әдетте қалай басталады?", ru: "Адрес сайта в браузере обычно начинается с:" },
+    options: [
+      { kz: "http:// немесе https://", ru: "http:// или https://" },
+      { kz: "C:\\", ru: "C:\\" },
+      { kz: "www. тек ғана", ru: "Только www." },
+      { kz: ".docx", ru: ".docx" }
+    ],
+    correct: 0
+  },
+  {
+    topicKey: "programming_basics",
+    topic: { kz: "Бағдарламалау негіздері", ru: "Основы программирования" },
+    text: { kz: "Компилятор не істейді?", ru: "Что делает компилятор?" },
+    options: [
+      { kz: "Тек мәтін басып шығару", ru: "Только печатает текст" },
+      { kz: "Жоғары деңгейлі кодты машиналық кодқа аудару", ru: "Переводит программу в машинный код" },
+      { kz: "Интернетті қосу", ru: "Подключает Интернет" },
+      { kz: "Файлды жояды", ru: "Удаляет файлы" }
+    ],
+    correct: 1
+  },
+  {
+    topicKey: "data_storage",
+    topic: { kz: "Деректерді сақтау", ru: "Хранение данных" },
+    text: { kz: "SSD жад HDD дискке қарағанда әдетте:", ru: "По сравнению с HDD, SSD обычно:" },
+    options: [
+      { kz: "Жылдам оқиды/жазады", ru: "Быстрее читает и пишет данные" },
+      { kz: "Әрқашан сыйымдырақ", ru: "Всегда объёмнее" },
+      { kz: "Тек дыбыс үшін", ru: "Только для звука" },
+      { kz: "Тек бейне үшін", ru: "Только для видео" }
+    ],
+    correct: 0
+  },
+  {
+    topicKey: "office_apps",
+    topic: { kz: "Мәтіндік редактор және электрондық кесте", ru: "Текстовый редактор и электронные таблицы" },
+    text: { kz: "Excel формуласы қалай басталады?", ru: "С чего начинается формула в Excel?" },
+    options: [
+      { kz: "+ белгісі", ru: "Знак +" },
+      { kz: "= белгісі", ru: "Знак =" },
+      { kz: "# белгісі", ru: "Знак #" },
+      { kz: "@ белгісі", ru: "Знак @" }
+    ],
+    correct: 1
+  },
+  {
+    topicKey: "algorithms",
+    topic: { kz: "Алгоритмдер", ru: "Алгоритмы" },
+    text: { kz: "Алгоритм блог-схемасында басталу/аяқталу қалай бейнеленеді?", ru: "Как на блок-схеме обозначают начало и конец?" },
+    options: [
+      { kz: "Скруглён тіктөртбүртшік", ru: "Скруглённый прямоугольник" },
+      { kz: "Тек ромб", ru: "Только ромб" },
+      { kz: "Тек параллелограмм", ru: "Только параллелограмм" },
+      { kz: "Тек шеңбер", ru: "Только круг" }
+    ],
+    correct: 0
+  },
+  {
+    topicKey: "number_systems",
+    topic: { kz: "Сандар жүйелері", ru: "Системы счисления" },
+    text: { kz: "Ондық 9 санының екілік көрінісі:", ru: "Двоичная запись числа 9:" },
+    options: [
+      { kz: "1001", ru: "1001" },
+      { kz: "1100", ru: "1100" },
+      { kz: "1010", ru: "1010" },
+      { kz: "1111", ru: "1111" }
+    ],
+    correct: 0
+  },
+  {
+    topicKey: "infosec",
+    topic: { kz: "Ақпараттық қауіпсіздік", ru: "Информационная безопасность" },
+    text: { kz: "Антивирустық бағдарлама не үшін?", ru: "Зачем нужна антивирусная программа?" },
+    options: [
+      { kz: "Ойын жылдамдығын арттыру", ru: "Ускорить игры" },
+      { kz: "Зиянды бағдарламаларды анықтау және болдырмау", ru: "Обнаруживать и блокировать вредоносное ПО" },
+      { kz: "Тек мәтін теру", ru: "Только набор текста" },
+      { kz: "Кесте сызу", ru: "Рисование таблиц" }
+    ],
+    correct: 1
+  },
+  {
+    topicKey: "multimedia",
+    topic: { kz: "Мультимедиа", ru: "Мультимедиа" },
+    text: { kz: "MP3 форматы не үшін қолданылады?", ru: "Формат MP3 используется для:" },
+    options: [
+      { kz: "Тек сурет", ru: "Только изображений" },
+      { kz: "Дыбыс (аудио)", ru: "Аудио" },
+      { kz: "Тек бейне", ru: "Только видео" },
+      { kz: "Тек кесте", ru: "Только таблиц" }
+    ],
+    correct: 1
+  },
+  {
+    topicKey: "data_storage",
+    topic: { kz: "Деректерді сақтау", ru: "Хранение данных" },
+    text: { kz: "Резервтік көшірме (backup) не үшін жасалады?", ru: "Зачем делают резервную копию данных?" },
+    options: [
+      { kz: "Деректер жоғалғанда қалпына келтіру үшін", ru: "Чтобы восстановить данные при потере или сбое" },
+      { kz: "Интернетті тездету", ru: "Ускорить Интернет" },
+      { kz: "Тек принтерді қосу", ru: "Только подключить принтер" },
+      { kz: "Тек ойын орнату", ru: "Только установить игру" }
+    ],
+    correct: 0
+  },
+  {
+    topicKey: "programming_basics",
+    topic: { kz: "Бағдарламалау негіздері", ru: "Основы программирования" },
+    text: { kz: "Бағдарламалауда «bug» деген не?", ru: "Что в программировании называют «bug»?" },
+    options: [
+      { kz: "Қате немесе ақаулылық", ru: "Ошибка или дефект в программе" },
+      { kz: "Тек комментарий", ru: "Только комментарий" },
+      { kz: "Тек файл атауы", ru: "Только имя файла" },
+      { kz: "Тек дыбыс", ru: "Только звук" }
+    ],
+    correct: 0
   }
 ];
 
+function getLocalDateISOFromDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function getTodayISODate() {
+  return getLocalDateISOFromDate(new Date());
+}
+
+function formatScheduleCalendarTitle(year, monthIndex) {
+  const d = new Date(year, monthIndex, 1);
+  const loc = state.lang === "kz" ? "kk-KZ" : "ru-RU";
+  try {
+    const s = d.toLocaleDateString(loc, { month: "long", year: "numeric" });
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  } catch {
+    return `${year} · ${monthIndex + 1}`;
+  }
+}
+
 let authEscapeHandler = null;
+let schedulePreviewEscapeHandler = null;
 
 const state = {
   lang: "kz",
+  themeMode: "light",
   mobileMenuOpen: false,
   openDropdownIndex: null,
   cabinetMenuOpen: false,
-  /** @type {null | "register" | "login"} */
+  /** @type {null | "login"} */
   authModal: null,
+  /** @type {null | { id: string, message: string, variant: "success" | "error" | "info" }} */
+  toast: null,
+  toastSeq: 0,
   currentUser: null,
   chatSessionId: createSessionId(),
   chatMessages: [],
   sending: false,
-  scheduleSelectedDate: "2026-04-18",
+  scheduleSelectedDate: getTodayISODate(),
   resultsTab: "points",
   accountsFilter: { name: "", grade: "", letter: "" },
   scheduleDraft: {
     selectedGrades: [],
-    selectedLetter: "",
     selectedStudentLogins: []
   },
+  scheduleTestPreviewOpen: false,
   scheduleStartTime: "09:00",
   scheduleFormErrors: {}
 };
 
+/** "landing" | "admin" | "student" — used to reset chat when returning to the main page from a cabinet. */
+let lastAppShell = null;
+
 /** Merged with cached/partial data so file:// localStorage never drops labels, duration options, or buttons. */
 const DEFAULT_SCHEDULE_TEST = {
   title: { kz: "Тестті жоспарлаңыз", ru: "Запланируйте тест" },
-  subscriptionBanner: {
-    kz: "Сізде белсенді жазылым жоқ. Төлем жасау немесе келісімшартқа отырып, қызметті белсендіріңіз. Телефон: +7 705 837 02 03",
-    ru: "У вас нет активной подписки. Оплатите или заключите договор для активации. Телефон: +7 705 837 02 03"
-  },
   testTypePlaceholder: { kz: "Тест түрі", ru: "Тип теста" },
   description: {
-    kz: "Пән бойынша тест: 10 сұрақ, автоматты тексеру. Қазіргі уақытта тек информатика. Таңдалған сынып пен оқушыларға жоспарлаңыз.",
-    ru: "Тест по предмету: 10 вопросов, автопроверка. Сейчас доступна только информатика. Назначьте выбранным классам и ученикам."
+    kz: "Пән бойынша тест: 25 сұрақ, мектеп бағдарламасы бойынша, автоматты тексеру. Тек информатика.",
+    ru: "Тест по предмету: 25 вопросов по школьной программе, автопроверка. Сейчас доступна только информатика."
   },
   showAllDesc: { kz: "Барлық сипаттаманы көрсету", ru: "Показать всё описание" },
   howItWorks: { kz: "Бұл қалай жұмыс істейді?", ru: "Как это работает?" },
@@ -162,8 +390,12 @@ const DEFAULT_SCHEDULE_TEST = {
     startTime: { kz: "Тест басталу уақыты", ru: "Время начала теста" },
     availability: { kz: "Тестілеу қол жетімді болады", ru: "Тестирование будет доступно" },
     subjectModeLabel: { kz: "Тест түрі", ru: "Тип теста" },
-    subjectWithInformatics: { kz: "Пән бойынша — Информатика (10 сұрақ)", ru: "По предмету — Информатика (10 вопросов)" },
-    informaticsOnlyHint: { kz: "Қазір тек информатика пәні қолжетімді.", ru: "Пока доступен только предмет «Информатика»." }
+    subjectWithInformatics: { kz: "Пән бойынша — Информатика (25 сұрақ, мектеп тақырыптары)", ru: "По предмету — Информатика (25 вопросов, школьные темы)" },
+    inDevelopment: { kz: "Әзірленуде", ru: "В разработке" },
+    informaticsOnlyHint: {
+      kz: "25 сұрақ, мектеп курсы бойынша. Тапсырғаннан кейін нәтиже мен қайталау керек тақырыптар көрсетіледі.",
+      ru: "25 вопросов по школьной программе. После сдачи показываются результат и темы для повторения."
+    }
   },
   timeBlockTitle: { kz: "Өту уақытын тағайындау", ru: "Назначение времени прохождения" },
   timeBlockSubtitle: {
@@ -217,6 +449,7 @@ function mergeScheduleTest(partial) {
     durationOptions:
       Array.isArray(o.durationOptions) && o.durationOptions.length > 0 ? o.durationOptions : DEFAULT_SCHEDULE_TEST.durationOptions
   };
+  delete merged.subscriptionBanner;
   return merged;
 }
 
@@ -270,8 +503,8 @@ function mergeAccountsPage(partial) {
 
 function mergeSite(partial) {
   const base = {
-    name: "EdooX.com",
-    domain: "edoox.com",
+    name: "EduMetrics.com",
+    domain: "edumetrics.com",
     language: ["kz", "ru"],
     theme: { primaryColor: "#6C4CF1", secondaryColor: "#F5F6FA", font: "Inter, sans-serif" }
   };
@@ -285,6 +518,43 @@ function normalizeAppData(data) {
   data.scheduleTest = mergeScheduleTest(data.scheduleTest);
   data.testBuilder = mergeTestBuilder(data.testBuilder);
   data.accountsPage = mergeAccountsPage(data.accountsPage);
+  if (data.header && typeof data.header === "object") {
+    data.header.menu = [];
+  }
+}
+
+function restorePreferredLang() {
+  try {
+    const L = localStorage.getItem(STORAGE_KEYS.lang);
+    if (L === "ru" || L === "kz") state.lang = L;
+  } catch {
+    /* ignore */
+  }
+}
+
+function savePreferredLang() {
+  try {
+    localStorage.setItem(STORAGE_KEYS.lang, state.lang);
+  } catch {
+    /* ignore */
+  }
+}
+
+function restorePreferredThemeMode() {
+  try {
+    const v = localStorage.getItem(STORAGE_KEYS.themeMode);
+    if (v === "light" || v === "dark") state.themeMode = v;
+  } catch {
+    /* ignore */
+  }
+}
+
+function savePreferredThemeMode() {
+  try {
+    localStorage.setItem(STORAGE_KEYS.themeMode, state.themeMode);
+  } catch {
+    /* ignore */
+  }
 }
 
 function createSessionId() {
@@ -303,16 +573,24 @@ function navigate(path) {
 
 function t(value) {
   if (value == null) return "";
-  if (typeof value === "object" && (value.kz || value.ru)) return value[state.lang] ?? value.kz ?? value.ru ?? "";
+  if (typeof value === "object" && !Array.isArray(value) && ("kz" in value || "ru" in value)) {
+    return value[state.lang] ?? value.kz ?? value.ru ?? "";
+  }
   return String(value);
 }
 
 function setTheme(theme) {
-  if (!theme) return;
   const root = document.documentElement;
-  if (theme.primaryColor) root.style.setProperty("--primary", theme.primaryColor);
-  if (theme.secondaryColor) root.style.setProperty("--secondary", theme.secondaryColor);
-  if (theme.font) root.style.setProperty("--font", theme.font);
+  const t = theme || {};
+  if (t.primaryColor) root.style.setProperty("--primary", t.primaryColor);
+  /* Inline --secondary из data.json перебивает палитру [data-theme="dark"] в CSS — таблицы и блоки остаются светлыми. */
+  if (state.themeMode === "dark") {
+    root.style.removeProperty("--secondary");
+  } else if (t.secondaryColor) {
+    root.style.setProperty("--secondary", t.secondaryColor);
+  }
+  if (t.font) root.style.setProperty("--font", t.font);
+  root.setAttribute("data-theme", state.themeMode === "dark" ? "dark" : "light");
 }
 
 function hashPassword(value) {
@@ -344,11 +622,14 @@ function seedDefaultAdmin() {
       fullName: "Administrator",
       email: "admin@local",
       login: "admin",
-      passwordHash: hashPassword("admin"),
+      passwordHash: hashPassword("070415"),
       role: "admin"
     });
-  } else if (!admin.role) {
-    admin.role = "admin";
+  } else {
+    if (!admin.role) admin.role = "admin";
+    if (admin.passwordHash === hashPassword("admin")) {
+      admin.passwordHash = hashPassword("070415");
+    }
   }
   saveUsers(users);
 }
@@ -394,6 +675,14 @@ function seedDemoStudents() {
       plainPassword: "5621840",
       grade: "10",
       letter: "A"
+    },
+    {
+      fullName: "tester",
+      email: "tester@demo.local",
+      login: "tester",
+      plainPassword: "123456",
+      grade: "11",
+      letter: "A"
     }
   ];
   const users = getUsers();
@@ -431,34 +720,69 @@ function saveSessionUser(user) {
   else localStorage.removeItem(STORAGE_KEYS.user);
 }
 
-function iconSvg(name) {
-  const color = "currentColor";
-  const map = {
-    ai: `<path d="M8 3v3M16 3v3M4 8h16M6 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M9 14h6M10 17h4"/>`,
-    library: `<path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 0-2 2V4Z"/><path d="M8 20h10"/><path d="M10 8h6M10 12h6"/>`,
-    exam: `<path d="M7 4h10v16H7z"/><path d="M9 8h6M9 12h6M9 16h4"/>`,
-    image: `<path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6Z"/><path d="M8.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path d="M20 16l-5-5-7 7"/>`,
-    translate: `<path d="M4 5h8v6H4V5Z"/><path d="M12 19h8v-6h-8v6Z"/><path d="M6 8h4M14 16h4"/><path d="M10 11l4 2M10 13l4-2"/>`,
-    doc: `<path d="M7 3h7l3 3v15a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M8 12h8M8 16h6"/>`,
-    video: `<path d="M4 7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/><path d="M16 10l4-3v10l-4-3v-4Z"/>`,
-    models: `<path d="M12 2l8 4v10l-8 4-8-4V6l8-4Z"/><path d="M12 22V12M4 6l8 4 8-4"/>` 
-  };
-  const content = map[name] ?? `<path d="M12 3v18M3 12h18"/>`;
-  return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${content}</svg>`;
-}
-
 function caretSvg() {
   return `<svg class="caret" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 
+function renderToast() {
+  if (!state.toast) return "";
+  const v = state.toast.variant || "info";
+  const title =
+    v === "success"
+      ? state.lang === "kz"
+        ? "Сәтті!"
+        : "Успешно!"
+      : v === "error"
+        ? state.lang === "kz"
+          ? "Қате"
+          : "Ошибка"
+        : state.lang === "kz"
+          ? "Ақпарат"
+          : "Информация";
+  return `<div class="toast toast--${v}" role="status" aria-live="polite"><div class="toast-title">${escapeHtml(title)}</div><div class="toast-msg">${escapeHtml(state.toast.message)}</div><button class="toast-close" type="button" aria-label="Close" data-toast-close>×</button></div>`;
+}
+
+function showToast(data, message, variant = "info", timeoutMs = 2600) {
+  const id = String(++state.toastSeq);
+  state.toast = { id, message: String(message || ""), variant };
+  renderApp(data);
+  window.setTimeout(() => {
+    if (state.toast?.id === id) {
+      state.toast = null;
+      renderApp(data);
+    }
+  }, timeoutMs);
+}
+
 function renderHeaderActions(data) {
+  const path = parseRoute();
+  const segs = path.split("/").filter(Boolean);
+  const role = state.currentUser?.role;
+  const homeActive = segs.length === 0;
+  const cabinetActive =
+    Boolean(state.currentUser) &&
+    ((role === "admin" && segs[0] === "admin") || (role === "student" && segs[0] === "student"));
+
   return (data.header.actions ?? [])
     .map((a) => {
+      if (a.id === "signup") return "";
+      if (a.id === "login") {
+        if (state.currentUser) return "";
+      }
+      if (a.id === "home") {
+        const cls = homeActive ? "btn btn-primary" : "btn";
+        const cur = homeActive ? ' aria-current="page"' : "";
+        return `<button class="${cls}" type="button" data-action="home"${cur}>${t(a.label)}</button>`;
+      }
       if (a.id === "cabinet") {
         if (!state.currentUser) return "";
-        const role = state.currentUser.role || "student";
-        if (role === "admin") return `<a class="btn btn-primary" href="#/admin">${t(a.label)}</a>`;
-        return `<a class="btn btn-primary" href="#/student">${t(a.label)}</a>`;
+        const r = state.currentUser.role || "student";
+        const isAdminLogin = String(state.currentUser.login || "").toLowerCase() === "admin";
+        const clsBase = cabinetActive ? "btn btn-primary" : "btn";
+        const cls = isAdminLogin ? `${clsBase} btn-cabinet-admin` : clsBase;
+        const cur = cabinetActive ? ' aria-current="page"' : "";
+        if (r === "admin") return `<a class="${cls}" href="#/admin"${cur}>${t(a.label)}</a>`;
+        return `<a class="${cls}" href="#/student"${cur}>${t(a.label)}</a>`;
       }
       return `<button class="btn" type="button" data-action="${a.id}">${t(a.label)}</button>`;
     })
@@ -467,58 +791,70 @@ function renderHeaderActions(data) {
 }
 
 function renderHeader(data) {
-  const menuHtml = (data.header.menu ?? [])
-    .map((item, idx) => {
-      const hasDropdown = Boolean(item.dropdown && item.items?.length);
-      if (!hasDropdown && item.scrollTarget) {
-        return `<a class="nav-link" href="#" data-scroll="${escapeAttr(item.scrollTarget)}">${t(item.title)}</a>`;
-      }
-      if (!hasDropdown) return `<a class="nav-link" href="#" data-nav="${idx}">${t(item.title)}</a>`;
-      const openClass = state.openDropdownIndex === idx ? "is-open" : "";
-      const items = item.items.map((x, i) => `<a class="dropdown-item" href="#" data-nav="${idx}" data-sub="${i}">${t(x.title)}</a>`).join("");
-      return `<div class="dropdown ${openClass}"><button class="nav-link" type="button" data-dropdown-toggle="${idx}">${t(item.title)} ${caretSvg()}</button><div class="dropdown-panel">${items}</div></div>`;
-    })
-    .join("");
+  const menuArr = data.header?.menu ?? [];
+  const hideMainNav = !menuArr.length;
+  const menuHtml = hideMainNav
+    ? ""
+    : menuArr
+        .map((item, idx) => {
+          const hasDropdown = Boolean(item.dropdown && item.items?.length);
+          if (!hasDropdown && item.scrollTarget) {
+            return `<a class="nav-link" href="#" data-scroll="${escapeAttr(item.scrollTarget)}">${t(item.title)}</a>`;
+          }
+          if (!hasDropdown) return `<a class="nav-link" href="#" data-nav="${idx}">${t(item.title)}</a>`;
+          const openClass = state.openDropdownIndex === idx ? "is-open" : "";
+          const items = item.items.map((x, i) => `<a class="dropdown-item" href="#" data-nav="${idx}" data-sub="${i}">${t(x.title)}</a>`).join("");
+          return `<div class="dropdown ${openClass}"><button class="nav-link" type="button" data-dropdown-toggle="${idx}">${t(item.title)} ${caretSvg()}</button><div class="dropdown-panel">${items}</div></div>`;
+        })
+        .join("");
 
   const actions = renderHeaderActions(data);
   const userBtn = state.currentUser
     ? `<button class="btn" type="button" data-logout title="Шығу">${escapeHtml(state.currentUser.login)} · ${state.lang === "kz" ? "шығу" : "выход"}</button>`
     : "";
 
-  return `<header class="topbar"><div class="container"><div class="header-inner"><div class="header-row"><a class="logo" href="#/" data-action="logo"><span class="logo-badge" aria-hidden="true"></span><span>${t(data.header.logo)}</span></a><button class="burger" type="button" aria-label="Menu" aria-expanded="${state.mobileMenuOpen ? "true" : "false"}" data-burger><span class="burger-lines" aria-hidden="true"><span></span><span></span><span></span></span></button></div><nav class="nav ${state.mobileMenuOpen ? "mobile-open" : ""}" aria-label="Main navigation">${menuHtml}</nav><div class="actions">${actions}<button class="btn btn-ghost" type="button" data-lang-toggle>${t(data.header.languageToggle?.label ?? { kz: "Рус", ru: "Қаз" })}</button>${userBtn}</div></div></div></header>`;
+  const navClass = `nav ${state.mobileMenuOpen ? "mobile-open" : ""}${hideMainNav ? " nav--cabinet" : ""}`;
+  const themeIcon = state.themeMode === "dark" ? "☀️" : "🌙";
+  const themeAria =
+    state.lang === "kz"
+      ? state.themeMode === "dark"
+        ? "Жарық тақырыпқа ауысу"
+        : "Қараңғы тақырыпқа ауысу"
+      : state.themeMode === "dark"
+        ? "Переключить на светлую тему"
+        : "Переключить на тёмную тему";
+  return `<header class="topbar"><div class="container"><div class="header-inner"><div class="header-row"><a class="logo" href="#/" data-action="logo"><span class="logo-badge" aria-hidden="true"></span><span>${t(data.header.logo)}</span></a>${hideMainNav ? "" : `<button class="burger" type="button" aria-label="Menu" aria-expanded="${state.mobileMenuOpen ? "true" : "false"}" data-burger><span class="burger-lines" aria-hidden="true"><span></span><span></span><span></span></span></button>`}</div><nav class="${navClass}" aria-label="Main navigation">${menuHtml}</nav><div class="actions">${actions}<button class="btn btn-ghost btn-theme-toggle" type="button" data-theme-toggle aria-label="${escapeAttr(themeAria)}" title="${escapeAttr(themeAria)}">${themeIcon}</button><button class="btn btn-ghost" type="button" data-lang-toggle>${t(data.header.languageToggle?.label ?? { kz: "Рус", ru: "Қаз" })}</button>${userBtn}</div></div></div></header>`;
 }
 
 function renderHero(data) {
-  const buttons = (data.hero.buttons ?? []).map((b, i) => `<button class="${i === 0 ? "btn btn-primary" : "btn"}" type="button" data-hero-btn="${b.id}">${t(b.label)}</button>`).join("");
+  const heroBtns = (data.hero.buttons ?? []).filter((b) => b && b.id !== "teacher");
+  const buttons = heroBtns.map((b) => `<button class="btn" type="button" data-hero-btn="${b.id}">${t(b.label)}</button>`).join("");
   const rebrand = data.hero?.rebrand ? `<p class="hero-rebrand">${escapeHtml(t(data.hero.rebrand))}</p>` : "";
   return `<section class="hero"><div class="container"><div class="hero-grid fade-in"><div class="hero-card">${rebrand}<h1 class="hero-title">${t(data.hero.title)}</h1><p class="hero-subtitle">${t(data.hero.subtitle)}</p><div class="hero-buttons">${buttons}</div></div><div class="hero-visual"><div class="blob"></div></div></div></div></section>`;
-}
-
-function renderFeatures(data) {
-  const cards = (data.features ?? []).map((f, idx) => `<div class="card" role="button" tabindex="0" data-feature="${idx}"><div class="icon">${iconSvg(f.icon)}</div><div><div class="card-title">${t(f.title)}</div></div>${f.badge ? `<div class="badge ${String(f.badge).toLowerCase()}">${escapeHtml(String(f.badge))}</div>` : ""}</div>`).join("");
-  const sec = data.featuresSectionTitle;
-  const sectionHeading = sec && typeof sec === "object" && (sec.kz || sec.ru) ? t(sec) : data.site?.name ?? "EdooX";
-  return `<section class="section" id="features"><div class="container"><div class="section-title">${escapeHtml(sectionHeading)}</div><div class="grid">${cards}</div></div></section>`;
 }
 
 function renderAuthModal(data) {
   if (!state.authModal) return "";
   const kz = state.lang === "kz";
-  const regActive = state.authModal === "register";
-  const loginActive = state.authModal === "login";
-  return `<div class="auth-modal-overlay is-open" data-auth-modal-overlay tabindex="-1"><div class="auth-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title"><button type="button" class="auth-modal-close" data-auth-modal-close aria-label="${kz ? "Жабу" : "Закрыть"}">×</button><h3 class="auth-modal-title" id="auth-modal-title">${t(data.auth?.title)}</h3><p class="auth-modal-sub">${t(data.auth?.subtitle)}</p><p class="auth-modal-hint">${kz ? "Оқушы аккаунттары (мысал): G8iF34902@school4902 / 8177644" : "Пример ученика: G8iF34902@school4902 / 8177644"}</p><div class="auth-modal-tabs"><button type="button" class="auth-modal-tab ${regActive ? "is-active" : ""}" data-auth-tab="register">${kz ? "Тіркеу" : "Регистрация"}</button><button type="button" class="auth-modal-tab ${loginActive ? "is-active" : ""}" data-auth-tab="login">${kz ? "Кіру" : "Вход"}</button></div><div class="auth-modal-panels"><div class="auth-modal-panel ${regActive ? "is-active" : ""}" data-auth-panel="register"><form class="auth-form auth-form--modal" data-register-form><input class="input" name="fullName" placeholder="${kz ? "Аты-жөні" : "ФИО"}" required><input class="input" name="email" type="email" placeholder="Email" required><input class="input" name="login" placeholder="Login" required><input class="input" name="password" type="password" placeholder="Password" required><input class="input" name="confirm" type="password" placeholder="${kz ? "Құпиясөзді растау" : "Подтвердите пароль"}" required><button class="btn btn-primary" type="submit">${kz ? "Тіркелу" : "Зарегистрироваться"}</button></form></div><div class="auth-modal-panel ${loginActive ? "is-active" : ""}" data-auth-panel="login"><form class="auth-form auth-form--modal" data-login-form><input class="input" name="login" placeholder="Login" required><input class="input" name="password" type="password" placeholder="Password" required><button class="btn btn-primary" type="submit">${kz ? "Кіру" : "Войти"}</button><small>${kz ? "Әкімші: admin / admin" : "Админ: admin / admin"}</small></form></div></div></div></div>`;
+  return `<div class="auth-modal-overlay is-open" data-auth-modal-overlay tabindex="-1"><div class="auth-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title"><button type="button" class="auth-modal-close" data-auth-modal-close aria-label="${kz ? "Жабу" : "Закрыть"}">×</button><h3 class="auth-modal-title" id="auth-modal-title">${kz ? "Кіру" : "Вход"}</h3><form class="auth-form auth-form--modal" data-login-form><input class="input" name="login" placeholder="Login" required><input class="input" name="password" type="password" placeholder="Password" required><button class="btn btn-primary" type="submit">${kz ? "Кіру" : "Войти"}</button></form></div></div>`;
 }
 
 function renderAiTutorSection(data) {
   const chat = state.chatMessages.map((m) => `<div class="chat-msg ${m.role}"><b>${m.role === "user" ? "You" : "AI"}:</b> ${escapeHtml(m.content)}</div>`).join("");
-  return `<section class="section"><div class="container"><div class="chat-box fade-in" id="ai-tutor"><h3 class="section-title">${t(data.aiTutor?.title)}</h3><p class="hero-subtitle">${t(data.aiTutor?.subtitle)}</p><div class="chat-meta"><span>Session: ${escapeHtml(state.chatSessionId)}</span><button class="btn" type="button" data-new-chat>${state.lang === "kz" ? "Жаңа чат" : "Новый чат"}</button></div><div class="chat-window" id="chatWindow">${chat || `<div class="chat-empty">${state.lang === "kz" ? "Сұрақ қойыңыз..." : "Задайте вопрос..."}</div>`}</div><form class="chat-form" data-chat-form><input class="input" name="message" placeholder="${state.lang === "kz" ? "Сұрағыңызды жазыңыз" : "Напишите вопрос"}" ${!state.currentUser ? "disabled" : ""} required><button class="btn btn-primary" type="submit" ${!state.currentUser ? "disabled" : ""}>${state.sending ? "..." : state.lang === "kz" ? "Жіберу" : "Отправить"}</button></form>${!state.currentUser ? `<small>${state.lang === "kz" ? "Чатқа кіру үшін алдымен аккаунтқа кіріңіз." : "Войдите в аккаунт, чтобы использовать чат."}</small>` : ""}</div></div></section>`;
+  const subtitle = t(data.aiTutor?.subtitle);
+  const subtitleHtml = subtitle ? `<p class="hero-subtitle">${subtitle}</p>` : "";
+  return `<section class="section"><div class="container"><div class="chat-box fade-in" id="ai-tutor"><h3 class="section-title">${t(data.aiTutor?.title)}</h3>${subtitleHtml}<div class="chat-meta"><button class="btn" type="button" data-new-chat>${state.lang === "kz" ? "Жаңа чат" : "Новый чат"}</button></div><div class="chat-window" id="chatWindow">${chat || `<div class="chat-empty">${state.lang === "kz" ? "Сұрақ қойыңыз..." : "Задайте вопрос..."}</div>`}</div><form class="chat-form" data-chat-form><input class="input" name="message" placeholder="${state.lang === "kz" ? "Сұрағыңызды жазыңыз" : "Напишите вопрос"}" ${!state.currentUser ? "disabled" : ""} required><button class="btn btn-primary" type="submit" ${!state.currentUser ? "disabled" : ""}>${state.sending ? "..." : state.lang === "kz" ? "Жіберу" : "Отправить"}</button></form>${!state.currentUser ? `<small>${state.lang === "kz" ? "Чатқа кіру үшін алдымен аккаунтқа кіріңіз." : "Войдите в аккаунт, чтобы использовать чат."}</small>` : ""}</div></div></section>`;
 }
 
 function renderFooter(data) {
   const c = data.footer?.contacts ?? {};
-  const buttons = (data.footer?.buttons ?? []).map((b, i) => `<button class="${i === 0 ? "btn btn-primary" : "btn"}" type="button" data-footer-btn="${b.id}">${t(b.label)}</button>`).join("");
+  const workLine = c.workTime ? `<div><span>Work time:</span> ${escapeHtml(c.workTime)}</div>` : "";
+  const buttons = (data.footer?.buttons ?? [])
+    .map((b, i) => `<button class="${i === 0 ? "btn btn-primary" : "btn"}" type="button" data-footer-btn="${b.id}">${t(b.label)}</button>`)
+    .join("");
   const socials = (data.footer?.socials ?? []).map((s) => `<a class="pill" href="#" data-social="${s.id}">${escapeHtml(s.label)}</a>`).join("");
-  return `<footer class="footer"><div class="container"><div class="footer-grid fade-in"><div><div class="footer-title">${t(data.footer?.contactsTitle)}</div><div class="contacts"><div><span>Phone:</span> ${escapeHtml(c.phone ?? "")}</div><div><span>Email:</span> ${escapeHtml(c.email ?? "")}</div><div><span>Work time:</span> ${escapeHtml(c.workTime ?? "")}</div></div></div><div><div class="footer-actions">${buttons}</div><div class="socials">${socials}</div></div></div><div class="fineprint">${escapeHtml(data.footer?.copyright ?? "")}</div></div></footer>`;
+  const actionsBlock = buttons ? `<div class="footer-actions">${buttons}</div>` : "";
+  return `<footer class="footer"><div class="container"><div class="footer-grid fade-in"><div><div class="footer-title">${t(data.footer?.contactsTitle)}</div><div class="contacts"><div><span>Phone:</span> ${escapeHtml(c.phone ?? "")}</div><div><span>Email:</span> ${escapeHtml(c.email ?? "")}</div>${workLine}</div></div><div>${actionsBlock}<div class="socials">${socials}</div></div></div><div class="fineprint">${escapeHtml(data.footer?.copyright ?? "")}</div></div></footer>`;
 }
 
 function parseAdminRoute(path) {
@@ -536,7 +872,7 @@ function parseAdminRoute(path) {
 
 function renderAdminSidebar(data, active) {
   const items = data.adminCabinet?.sidebar ?? [];
-  return `<aside class="admin-sidebar"><div class="admin-sidebar-brand"><span class="logo-badge"></span><span>${escapeHtml(data.site?.name ?? "EdooX.com")}</span></div><nav class="admin-nav">${items
+  return `<aside class="admin-sidebar"><div class="admin-sidebar-brand"><span class="logo-badge"></span><span>${escapeHtml(data.site?.name ?? "EduMetrics.com")}</span></div><nav class="admin-nav">${items
     .map((item) => {
       const href = item.id === "dashboard" ? "#/admin" : `#/admin/${item.id}`;
       const isActive = item.id === active || (active === "dashboard" && item.id === "dashboard");
@@ -558,27 +894,10 @@ function buildMonthCalendar(year, monthIndex) {
 function getScheduleFilteredStudentList() {
   const grades = state.scheduleDraft.selectedGrades.map(String);
   if (!grades.length) return [];
-  let list = getStudentUsers().filter((u) => grades.includes(String(u.grade ?? "")));
-  const letter = (state.scheduleDraft.selectedLetter || "").trim();
-  if (letter) {
-    list = list.filter((u) => String(u.letter ?? "").toUpperCase() === letter.toUpperCase());
-  }
+  const list = getStudentUsers().filter((u) => grades.includes(String(u.grade ?? "")));
   return list.sort((a, b) =>
     String(a.fullName).localeCompare(String(b.fullName), state.lang === "kz" ? "kk" : "ru", { sensitivity: "base" })
   );
-}
-
-function getLettersForScheduleGrades(gradeList) {
-  const grades = gradeList.map(String);
-  if (!grades.length) return [];
-  const set = new Set();
-  getStudentUsers()
-    .filter((u) => grades.includes(String(u.grade ?? "")))
-    .forEach((u) => {
-      const L = String(u.letter ?? "").trim();
-      if (L) set.add(L);
-    });
-  return [...set].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 }
 
 function pruneScheduleStudentSelection() {
@@ -641,8 +960,85 @@ function renderInformaticsResultBreakdownHTML(result, data) {
     const badge = ok
       ? `<span class="result-badge result-badge--ok">${t(sc.markCorrect ?? { kz: "Дұрыс", ru: "Верно" })}</span>`
       : `<span class="result-badge result-badge--bad">${t(sc.markWrong ?? { kz: "Қате", ru: "Ошибка" })}</span>`;
-    return `<div class="result-breakdown-row ${ok ? "is-correct" : "is-wrong"}"><div class="result-breakdown-head"><span class="result-breakdown-n">${i + 1}</span>${badge}</div><div class="result-breakdown-q">${escapeHtml(t(q.text))}</div><div class="result-breakdown-answers"><div><span class="result-breakdown-label">${t(sc.yourAnswerLabel ?? { kz: "Сіздің жауабыңыз", ru: "Ваш ответ" })}:</span> ${escapeHtml(selText)}</div><div><span class="result-breakdown-label">${t(sc.correctAnswerLabel ?? { kz: "Дұрыс жауап", ru: "Верный ответ" })}:</span> ${escapeHtml(corText)}</div></div></div>`;
+    const topicLine = q.topic ? `<div class="result-breakdown-topic">${escapeHtml(t(q.topic))}</div>` : "";
+    return `<div class="result-breakdown-row ${ok ? "is-correct" : "is-wrong"}"><div class="result-breakdown-head"><span class="result-breakdown-n">${i + 1}</span>${badge}</div>${topicLine}<div class="result-breakdown-q">${escapeHtml(t(q.text))}</div><div class="result-breakdown-answers"><div><span class="result-breakdown-label">${t(sc.yourAnswerLabel ?? { kz: "Сіздің жауабыңыз", ru: "Ваш ответ" })}:</span> ${escapeHtml(selText)}</div><div><span class="result-breakdown-label">${t(sc.correctAnswerLabel ?? { kz: "Дұрыс жауап", ru: "Верный ответ" })}:</span> ${escapeHtml(corText)}</div></div></div>`;
   }).join("")}</div>`;
+}
+
+/** Агрегация по topicKey: сколько верно/неверно по каждой школьной теме. */
+function computeInformaticsTopicReport(result) {
+  const answers = result?.answers;
+  if (!Array.isArray(answers) || answers.length !== INFORMATICS_QUESTIONS.length) return null;
+  const map = new Map();
+  for (let i = 0; i < INFORMATICS_QUESTIONS.length; i++) {
+    const q = INFORMATICS_QUESTIONS[i];
+    const key = q.topicKey || `i${i}`;
+    const topicLabel = q.topic || { kz: "Тақырып", ru: "Тема" };
+    if (!map.has(key)) map.set(key, { topicKey: key, topic: topicLabel, correct: 0, wrong: 0 });
+    const row = map.get(key);
+    const a = answers[i];
+    const selected = a?.selected;
+    const correctIdx = typeof a?.correct === "number" ? a.correct : q.correct;
+    const ok = selected != null && !Number.isNaN(Number(selected)) && Number(selected) === correctIdx;
+    if (ok) row.correct += 1;
+    else row.wrong += 1;
+  }
+  const rows = [...map.values()].sort((a, b) =>
+    t(a.topic).localeCompare(t(b.topic), state.lang === "kz" ? "kk" : "ru", { sensitivity: "base" })
+  );
+  const toRepeat = rows.filter((r) => r.wrong > 0).map((r) => ({ topicKey: r.topicKey, topic: r.topic }));
+  return { rows, toRepeat };
+}
+
+/** Ученику: какие темы повторить (после разбора по вопросам). */
+function renderInformaticsTopicsRepeatHTML(result, data) {
+  const rep = computeInformaticsTopicReport(result);
+  if (!rep) return "";
+  const sc = data.studentCabinet ?? {};
+  const h = escapeHtml(t(sc.topicsToRepeatHeading ?? { kz: "Қайталау керек тақырыптар", ru: "Темы, которые стоит повторить" }));
+  if (!rep.toRepeat.length) {
+    const okMsg = escapeHtml(
+      t(
+        sc.topicsToRepeatAllOk ??
+          { kz: "Барлық тақырыптар бойынша сұрақтар дұрыс!", ru: "По всем темам ответы верные — повторять не требуется." }
+      )
+    );
+    return `<div class="topic-repeat-block"><h2 class="student-tests-heading">${h}</h2><p class="hero-subtitle">${okMsg}</p></div>`;
+  }
+  const linkMap = sc.topicLinks ?? {};
+  const items = rep.toRepeat
+    .map(({ topicKey, topic }) => {
+      const label = escapeHtml(t(topic));
+      const url = linkMap?.[topicKey] || "";
+      if (url) {
+        return `<li><a class="topic-link" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${label}</a></li>`;
+      }
+      return `<li>${label}</li>`;
+    })
+    .join("");
+  return `<div class="topic-repeat-block"><h2 class="student-tests-heading">${h}</h2><ul class="topic-repeat-list">${items}</ul></div>`;
+}
+
+/** Админу: по темам — знает / есть ошибки и доля верных внутри темы. */
+function renderInformaticsTopicMasteryAdminHTML(result, data) {
+  const rep = computeInformaticsTopicReport(result);
+  if (!rep) return "";
+  const rp = data.resultsPage ?? {};
+  const h = escapeHtml(t(rp.topicMasteryHeading ?? { kz: "Тақырыптар бойынша", ru: "Усвоение тем" }));
+  const colTopic = escapeHtml(t(rp.topicColumnTopic ?? { kz: "Тақырып", ru: "Тема" }));
+  const colStat = escapeHtml(t(rp.topicColumnStatus ?? { kz: "Білу деңгейі", ru: "Уровень знаний" }));
+  const solid = escapeHtml(t(rp.topicStatusSolid ?? { kz: "Біледі (қатесіз)", ru: "Знает (без ошибок)" }));
+  const partial = escapeHtml(t(rp.topicStatusPartial ?? { kz: "Қателер бар", ru: "Есть ошибки" }));
+  const rows = rep.rows
+    .map((r) => {
+      const total = r.correct + r.wrong;
+      const isSolid = r.wrong === 0;
+      const status = isSolid ? solid : partial;
+      const badgeClass = isSolid ? "topic-mastery-badge--ok" : "topic-mastery-badge--warn";
+      return `<tr><td>${escapeHtml(t(r.topic))}</td><td><span class="topic-mastery-badge ${badgeClass}">${status}</span> <span class="topic-mastery-count">${r.correct}/${total}</span></td></tr>`;
+    })
+    .join("");
+  return `<div class="topic-mastery-block"><h2 class="student-tests-heading">${h}</h2><div class="table-wrap"><table class="data-table topic-mastery-table"><thead><tr><th>${colTopic}</th><th>${colStat}</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 
 function studentAssignedToSchedule(entry, user) {
@@ -658,22 +1054,51 @@ function scheduleGradeLabel(grade) {
   return `${grade} ${state.lang === "kz" ? "сынып" : "класс"}`;
 }
 
+/** Модальное окно: тест информатики так же, как у ученика (без сохранения). */
+function renderScheduleTestPreviewModal(data) {
+  if (!state.scheduleTestPreviewOpen) return "";
+  const sc = data.studentCabinet ?? {};
+  const kz = state.lang === "kz";
+  const closeLabel = kz ? "Жабу" : "Закрыть";
+  const banner = kz ? "Алдын ала қарау — нәтиже жіберілмейді және сақталмайды." : "Предпросмотр — ответы не отправляются и не сохраняются.";
+  const qs = INFORMATICS_QUESTIONS.map((q, i) => {
+    const opts = q.options
+      .map(
+        (opt, j) =>
+          `<label class="student-test-opt"><input type="radio" name="preview-q${i}" value="${j}" /> <span>${escapeHtml(t(opt))}</span></label>`
+      )
+      .join("");
+    return `<div class="student-test-q"><div class="student-test-qtext">${i + 1}. ${escapeHtml(t(q.text))}</div><div class="student-test-opts">${opts}</div></div>`;
+  }).join("");
+  return `<div class="schedule-preview-overlay" data-schedule-preview-overlay tabindex="-1"><div class="schedule-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="sched-preview-title"><button type="button" class="schedule-preview-close" data-schedule-preview-close aria-label="${escapeHtml(closeLabel)}">×</button><h2 class="admin-page-title" id="sched-preview-title">${escapeHtml(t(sc.takeTestTitle))}</h2><p class="hero-subtitle">${escapeHtml(t(sc.informaticsTen))}</p><p class="schedule-preview-banner">${escapeHtml(banner)}</p><div class="schedule-preview-body">${qs}</div><div class="schedule-preview-actions"><button type="button" class="btn btn-primary" data-schedule-preview-close>${escapeHtml(closeLabel)}</button></div></div></div>`;
+}
+
 function renderSchedulePage(data) {
   const st = data.scheduleTest ?? {};
   const err = state.scheduleFormErrors || {};
-  const { cells } = buildMonthCalendar(2026, 3);
+  const todayISO = getTodayISODate();
+  if (state.scheduleSelectedDate < todayISO) state.scheduleSelectedDate = todayISO;
+  const now = new Date();
+  const year = now.getFullYear();
+  const monthIndex = now.getMonth();
+  const { cells } = buildMonthCalendar(year, monthIndex);
+  const calTitle = formatScheduleCalendarTitle(year, monthIndex);
   const weekLabels = state.lang === "kz" ? ["Дс", "Сс", "Ср", "Бс", "Жм", "Сн", "Жк"] : ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+  const ymd = (y, m, day) => `${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   const grid = cells
     .map((d) => {
       if (d == null) return `<div class="cal-cell cal-empty"></div>`;
-      const iso = `2026-04-${String(d).padStart(2, "0")}`;
-      const sel = iso === state.scheduleSelectedDate ? "is-selected" : "";
+      const iso = ymd(year, monthIndex, d);
+      const isPast = iso < todayISO;
+      const sel = !isPast && iso === state.scheduleSelectedDate ? "is-selected" : "";
+      if (isPast) {
+        return `<button type="button" class="cal-cell cal-day cal-day--past" disabled aria-disabled="true" title="${state.lang === "kz" ? "Өткен күн" : "Прошедший день"}">${d}</button>`;
+      }
       return `<button type="button" class="cal-cell cal-day ${sel}" data-cal-date="${iso}">${d}</button>`;
     })
     .join("");
 
   const studentsDisabled = !state.scheduleDraft.selectedGrades.length;
-  const letters = getLettersForScheduleGrades(state.scheduleDraft.selectedGrades);
 
   const gradeTags = [...state.scheduleDraft.selectedGrades]
     .sort((a, b) => Number(a) - Number(b))
@@ -687,15 +1112,6 @@ function renderSchedulePage(data) {
   const addGradeOpts =
     `<option value="">${escapeHtml(t(st.fields?.classes))}</option>` +
     availGrades.map((g) => `<option value="${escapeAttr(g)}">${escapeHtml(scheduleGradeLabel(g))}</option>`).join("");
-
-  let letterBlock = "";
-  if (state.scheduleDraft.selectedLetter) {
-    letterBlock = `<div class="tag-list"><span class="tag"><span class="tag-text">${escapeHtml(state.scheduleDraft.selectedLetter)}</span><button type="button" class="tag-remove" data-remove-letter aria-label="remove">×</button></span></div>`;
-  } else {
-    letterBlock = `<select class="input input--schedule" data-letter-pick ${studentsDisabled ? "disabled" : ""} title="${escapeAttr(t(st.fields?.letters))}"><option value="">${escapeHtml(t(st.fields?.letters))}</option>${letters
-      .map((L) => `<option value="${escapeAttr(L)}">${escapeHtml(L)}</option>`)
-      .join("")}</select>`;
-  }
 
   const studs = getScheduleFilteredStudentList();
   const selectedUsers = getStudentUsers().filter((u) => state.scheduleDraft.selectedStudentLogins.includes(u.login));
@@ -731,9 +1147,14 @@ function renderSchedulePage(data) {
   const eTime = Boolean(err.startTime);
   const eDur = Boolean(err.duration);
 
-  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(st.title)}</h1><div class="subscription-banner">${t(st.subscriptionBanner)}</div><div class="schedule-layout"><div class="schedule-cal"><div class="cal-head">${t(st.calendarMonth)}</div><div class="cal-weekdays">${weekLabels.map((w) => `<span>${w}</span>`).join("")}</div><div class="cal-grid">${grid}</div></div><div class="schedule-form-wrap"><form data-schedule-form class="schedule-form-inner" novalidate><div class="schedule-field"><span class="field-label">${t(st.fields?.subjectModeLabel || st.testTypePlaceholder)}</span><div class="schedule-readonly input input--schedule">${escapeHtml(t(st.fields?.subjectWithInformatics))}</div><input type="hidden" name="testType" value="subject" /><input type="hidden" name="subject" value="informatics" /><p class="form-hint schedule-subject-hint">${escapeHtml(t(st.fields?.informaticsOnlyHint))}</p></div><p class="schedule-desc">${t(st.description)}</p><a href="#" class="schedule-link">${t(st.showAllDesc)} ${caretSvg()}</a><p class="schedule-how"><span class="play-ico">▶</span> ${t(st.howItWorks)}</p><div class="schedule-two-col schedule-pickers-row"><div class="schedule-field"><span class="field-label">${t(st.gradesLabel)}</span><div class="tag-field ${eGrades ? "is-invalid" : ""}"><div class="tag-list">${gradeTags}</div><select class="tag-field-add" data-add-grade aria-label="add-grade">${addGradeOpts}</select></div>${eGrades ? `<p class="field-error">${escapeHtml(t(st.errors?.classesField))}</p>` : ""}</div><div class="schedule-field"><span class="field-label">${t(st.lettersLabel)}</span><div class="tag-field tag-field--letter">${letterBlock}</div></div></div><div class="schedule-field schedule-field--block-students"><span class="field-label">${t(st.studentsLabel)}</span><div class="tag-field tag-field--tags-only ${eStudents ? "is-invalid" : ""}"><div class="tag-list">${studentTags || `<span class="tag-placeholder">${escapeHtml(t(st.fields?.students))}</span>`}</div></div>${eStudents ? `<p class="field-error">${escapeHtml(t(st.errors?.students))}</p>` : ""}<div class="student-list ${studentsDisabled ? "is-disabled" : ""}">${studs.length ? `${allRow}${studRows}` : studRows}</div><p class="form-hint">${escapeHtml(hint)}</p></div><div class="schedule-field"><label class="field-label" for="sched-lang">${t(st.fields?.language)}</label><select class="input input--schedule ${eLang ? "is-invalid" : ""}" id="sched-lang" name="language"><option value="">${escapeHtml(t(st.fields?.language))}</option><option value="kk">Қазақша</option><option value="ru">Орысша</option></select>${eLang ? `<p class="field-error">${escapeHtml(t(st.errors?.language))}</p>` : ""}</div><div class="schedule-time-section"><h3 class="schedule-section-heading">${escapeHtml(t(st.timeBlockTitle))}</h3><p class="schedule-section-sub">${escapeHtml(t(st.timeBlockSubtitle))}</p><div class="schedule-two-col schedule-two-col--bottom"><div class="schedule-field"><label class="field-label" for="sched-time">${t(st.fields?.startTime)}</label><input class="input input--schedule ${eTime ? "is-invalid" : ""}" id="sched-time" name="scheduleTime" type="time" value="${escapeAttr(state.scheduleStartTime)}" required />${eTime ? `<p class="field-error">${escapeHtml(t(st.errors?.startTime))}</p>` : ""}</div><div class="schedule-field"><label class="field-label" for="sched-dur">${t(st.fields?.availability)}</label><select class="input input--schedule ${eDur ? "is-invalid" : ""}" id="sched-dur" name="durationHours" aria-label="${escapeAttr(t(st.fields?.availability))}">${durOpts}</select>${eDur ? `<p class="field-error">${escapeHtml(t(st.errors?.duration))}</p>` : ""}</div></div></div><div class="schedule-actions"><button class="btn-schedule-cta" type="submit">${escapeHtml(t(st.submit) || (state.lang === "kz" ? "Жоспарлау" : "Запланировать"))}</button><button type="button" class="btn-schedule-preview" data-schedule-preview>${escapeHtml(
+  const typeModeLabel = t(st.fields?.subjectModeLabel || st.testTypePlaceholder);
+  const devLabel = escapeHtml(t(st.fields?.inDevelopment));
+  const activeSubjectLabel = escapeHtml(t(st.fields?.subjectWithInformatics));
+  const scheduleTypeSelect = `<label class="field-label" for="sched-test-type">${escapeHtml(typeModeLabel)}</label><select class="input input--schedule" id="sched-test-type" aria-label="${escapeAttr(typeModeLabel)}"><option value="informatics" selected>${activeSubjectLabel}</option><option disabled value="_dev1">${devLabel}</option><option disabled value="_dev2">${devLabel}</option></select><input type="hidden" name="testType" value="subject" /><input type="hidden" name="subject" value="informatics" />`;
+
+  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(st.title)}</h1><div class="schedule-layout"><div class="schedule-cal"><div class="cal-head">${escapeHtml(calTitle)}</div><div class="cal-weekdays">${weekLabels.map((w) => `<span>${w}</span>`).join("")}</div><div class="cal-grid">${grid}</div></div><div class="schedule-form-wrap"><form data-schedule-form class="schedule-form-inner" novalidate><div class="schedule-field">${scheduleTypeSelect}<p class="form-hint schedule-subject-hint">${escapeHtml(t(st.fields?.informaticsOnlyHint))}</p></div><div class="schedule-field schedule-field--grades-only"><span class="field-label">${t(st.gradesLabel)}</span><div class="tag-field ${eGrades ? "is-invalid" : ""}"><div class="tag-list">${gradeTags}</div><select class="tag-field-add" data-add-grade aria-label="add-grade">${addGradeOpts}</select></div>${eGrades ? `<p class="field-error">${escapeHtml(t(st.errors?.classesField))}</p>` : ""}</div><div class="schedule-field schedule-field--block-students"><span class="field-label">${t(st.studentsLabel)}</span><div class="tag-field tag-field--tags-only ${eStudents ? "is-invalid" : ""}"><div class="tag-list">${studentTags || `<span class="tag-placeholder">${escapeHtml(t(st.fields?.students))}</span>`}</div></div>${eStudents ? `<p class="field-error">${escapeHtml(t(st.errors?.students))}</p>` : ""}<div class="student-list ${studentsDisabled ? "is-disabled" : ""}">${studs.length ? `${allRow}${studRows}` : studRows}</div><p class="form-hint">${escapeHtml(hint)}</p></div><div class="schedule-field"><label class="field-label" for="sched-lang">${t(st.fields?.language)}</label><select class="input input--schedule ${eLang ? "is-invalid" : ""}" id="sched-lang" name="language"><option value="">${escapeHtml(t(st.fields?.language))}</option><option value="kk">Қазақша</option><option value="ru">Орысша</option></select>${eLang ? `<p class="field-error">${escapeHtml(t(st.errors?.language))}</p>` : ""}</div><div class="schedule-time-section"><h3 class="schedule-section-heading">${escapeHtml(t(st.timeBlockTitle))}</h3><p class="schedule-section-sub">${escapeHtml(t(st.timeBlockSubtitle))}</p><div class="schedule-two-col schedule-two-col--bottom"><div class="schedule-field"><label class="field-label" for="sched-time">${t(st.fields?.startTime)}</label><input class="input input--schedule ${eTime ? "is-invalid" : ""}" id="sched-time" name="scheduleTime" type="time" value="${escapeAttr(state.scheduleStartTime)}" required />${eTime ? `<p class="field-error">${escapeHtml(t(st.errors?.startTime))}</p>` : ""}</div><div class="schedule-field"><label class="field-label" for="sched-dur">${t(st.fields?.availability)}</label><select class="input input--schedule ${eDur ? "is-invalid" : ""}" id="sched-dur" name="durationHours" aria-label="${escapeAttr(t(st.fields?.availability))}">${durOpts}</select>${eDur ? `<p class="field-error">${escapeHtml(t(st.errors?.duration))}</p>` : ""}</div></div></div><div class="schedule-actions"><button class="btn-schedule-cta" type="submit">${escapeHtml(t(st.submit) || (state.lang === "kz" ? "Жоспарлау" : "Запланировать"))}</button><button type="button" class="btn-schedule-preview" data-schedule-preview>${escapeHtml(
     t(st.previewButton) || (state.lang === "kz" ? "Өзіңіз көру (алдын ала қарау)" : "Попробовать самому (предпросмотр)")
-  )}</button></div></form></div></div></div>`;
+  )}</button></div></form></div></div></div>${renderScheduleTestPreviewModal(data)}`;
 }
 
 function renderTestBuilderPage(data) {
@@ -809,7 +1230,7 @@ function renderResultsPage(data) {
 
 function renderAdminDashboard(data) {
   const ac = data.adminCabinet ?? {};
-  return `<div class="admin-page fade-in"><div class="admin-profile"><div class="admin-avatar"></div><div><div class="admin-org">${t(ac.orgLabel)}</div><h2 class="admin-school">${t(ac.schoolName)}</h2></div></div><p class="hero-subtitle">${state.lang === "kz" ? "Тестілеуді жоспарлау, тест құрастыру, оқушылар және қорытындылар бөлімдерін таңдаңыз." : "Выберите раздел: планирование теста, конструктор, учащиеся или результаты."}</p><div class="dashboard-cards"><a class="dashboard-card" href="#/admin/schedule"><h3>${t({ kz: "Тестті жоспарлау", ru: "Планирование теста" })}</h3></a><a class="dashboard-card" href="#/admin/testBuilder"><h3>${t({ kz: "Тест құрастырушы", ru: "Конструктор тестов" })}</h3></a><a class="dashboard-card" href="#/admin/accounts"><h3>${t({ kz: "Оқушылар", ru: "Учащиеся" })}</h3></a><a class="dashboard-card" href="#/admin/results"><h3>${t({ kz: "Қорытындылар", ru: "Результаты" })}</h3></a></div></div>`;
+  return `<div class="admin-page fade-in"><div class="admin-profile"><div class="admin-avatar"></div><div><div class="admin-org">${t(ac.orgLabel)}</div><h2 class="admin-school">${t(ac.schoolName)}</h2></div></div><div class="dashboard-cards"><a class="dashboard-card" href="#/admin/schedule"><h3>${t({ kz: "Тестті жоспарлау", ru: "Планирование теста" })}</h3></a><a class="dashboard-card" href="#/admin/testBuilder"><h3>${t({ kz: "Тест құрастырушы", ru: "Конструктор тестов" })}</h3></a><a class="dashboard-card" href="#/admin/accounts"><h3>${t({ kz: "Оқушылар", ru: "Учащиеся" })}</h3></a><a class="dashboard-card" href="#/admin/results"><h3>${t({ kz: "Қорытындылар", ru: "Результаты" })}</h3></a></div></div>`;
 }
 
 function renderAdminResultDetailPage(data, scheduleId, studentLogin) {
@@ -821,7 +1242,7 @@ function renderAdminResultDetailPage(data, scheduleId, studentLogin) {
   }
   const schedule = getScheduledTests().find((s) => s.id === scheduleId);
   const dateLine = schedule?.calendarDate ? `${state.lang === "kz" ? "Күні: " : "Дата: "}${escapeHtml(schedule.calendarDate)}` : "";
-  return `<div class="admin-page fade-in"><a class="student-test-back" href="#/admin/results">${t(rp.backToList ?? { kz: "← Қорытындылар", ru: "← К результатам" })}</a><h1 class="admin-page-title">${escapeHtml(result.fullName)}</h1><p class="hero-subtitle"><code>${escapeHtml(result.studentLogin)}</code>${dateLine ? ` · ${dateLine}` : ""}</p><p class="student-result-score">${t(sc.scoreLabel)}: <strong>${result.score}/${result.maxScore}</strong></p><p class="hero-subtitle muted">${escapeHtml(formatIsoDate(result.submittedAt))}</p><h2 class="student-tests-heading">${t(rp.detailAnswersHeading ?? { kz: "Жауаптар", ru: "Ответы по вопросам" })}</h2>${renderInformaticsResultBreakdownHTML(result, data)}</div>`;
+  return `<div class="admin-page fade-in"><a class="student-test-back" href="#/admin/results">${t(rp.backToList ?? { kz: "← Қорытындылар", ru: "← К результатам" })}</a><h1 class="admin-page-title">${escapeHtml(result.fullName)}</h1><p class="hero-subtitle"><code>${escapeHtml(result.studentLogin)}</code>${dateLine ? ` · ${dateLine}` : ""}</p><p class="student-result-score">${t(sc.scoreLabel)}: <strong>${result.score}/${result.maxScore}</strong></p><p class="hero-subtitle muted">${escapeHtml(formatIsoDate(result.submittedAt))}</p><h2 class="student-tests-heading">${t(rp.detailAnswersHeading ?? { kz: "Жауаптар", ru: "Ответы по вопросам" })}</h2>${renderInformaticsResultBreakdownHTML(result, data)}${renderInformaticsTopicMasteryAdminHTML(result, data)}</div>`;
 }
 
 function renderAdminMain(data, section, resultDetail) {
@@ -846,7 +1267,7 @@ function renderAdminShell(data) {
   const path = parseRoute();
   const { section, resultDetail } = parseAdminRoute(path);
   const bc = `${t(data.adminCabinet?.breadcrumbHome)} / ${t(data.adminCabinet?.sidebar?.find((s) => s.id === section)?.label ?? data.adminCabinet?.sidebar?.[0]?.label)}`;
-  return `${renderHeader(data)}<div class="admin-layout"><div class="container admin-layout-inner">${renderAdminSidebar(data, section)}<main class="admin-main"><div class="breadcrumb">${bc}</div>${renderAdminMain(data, section, resultDetail)}</main></div></div>${renderFooter(data)}`;
+  return `${renderHeader(data)}<div class="admin-layout"><div class="container admin-layout-inner">${renderAdminSidebar(data, section)}<main class="admin-main"><div class="breadcrumb">${bc}</div>${renderAdminMain(data, section, resultDetail)}</main></div></div>${renderFooter(data)}${renderToast()}`;
 }
 
 function formatIsoDate(iso) {
@@ -868,11 +1289,11 @@ function renderStudentDashboardContent(data) {
       const actions = done
         ? `<span class="student-test-score">${escapeHtml(t(sc.scoreShort))}: <strong>${done.score}/${done.maxScore}</strong></span> <a class="btn" href="#/student/test/${encodeURIComponent(s.id)}">${t(sc.viewResult)}</a>`
         : `<a class="btn btn-primary" href="#/student/test/${encodeURIComponent(s.id)}">${t(sc.openTest)}</a>`;
-      return `<div class="student-test-card"><div class="student-test-card-head"><span class="student-test-card-title">${escapeHtml(t(sc.subjectInformatics))}</span>${meta}</div>${actions}</div>`;
+      return `<div class="student-test-card"><div class="student-test-card-head"><span class="student-test-card-title">${escapeHtml(t(sc.subjectInformatics))}</span>${meta}</div><div class="student-test-card-actions">${actions}</div></div>`;
     })
     .join("");
 
-  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(sc.title)}</h1><p class="hero-subtitle">${t(sc.welcome)}</p><p class="hero-subtitle"><strong>${escapeHtml(user?.fullName || "")}</strong> · ${escapeHtml(user?.login || "")}</p><h2 class="student-tests-heading">${t(sc.scheduledTestsHeading)}</h2>${
+  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(sc.title)}</h1><p class="hero-subtitle"><strong>${escapeHtml(user?.fullName || "")}</strong> · ${escapeHtml(user?.login || "")}</p><h2 class="student-tests-heading">${t(sc.scheduledTestsHeading)}</h2>${
     cards ? `<div class="student-tests-grid">${cards}</div>` : `<p class="hero-subtitle muted">${t(sc.noScheduledTests)}</p>`
   }</div>`;
 }
@@ -890,7 +1311,7 @@ function renderStudentTestPage(data, scheduleId) {
   const existing = getResultByScheduleAndLogin(scheduleId, user.login);
   if (existing) {
     const breakdownTitle = t(sc.resultBreakdownHeading ?? { kz: "Сұрақтар бойынша", ru: "По вопросам" });
-    return `<div class="admin-page fade-in"><a class="student-test-back" href="#/student">${t(sc.back)}</a><h1 class="admin-page-title">${t(sc.resultTitle)}</h1><p class="student-result-score">${t(sc.scoreLabel)}: <strong>${existing.score}/${existing.maxScore}</strong></p><p class="hero-subtitle">${escapeHtml(formatIsoDate(existing.submittedAt))}</p><h2 class="student-tests-heading">${escapeHtml(breakdownTitle)}</h2>${renderInformaticsResultBreakdownHTML(existing, data)}</div>`;
+    return `<div class="admin-page fade-in"><a class="student-test-back" href="#/student">${t(sc.back)}</a><h1 class="admin-page-title">${t(sc.resultTitle)}</h1><p class="student-result-score">${t(sc.scoreLabel)}: <strong>${existing.score}/${existing.maxScore}</strong></p><p class="hero-subtitle">${escapeHtml(formatIsoDate(existing.submittedAt))}</p><h2 class="student-tests-heading">${escapeHtml(breakdownTitle)}</h2>${renderInformaticsResultBreakdownHTML(existing, data)}${renderInformaticsTopicsRepeatHTML(existing, data)}</div>`;
   }
 
   const qs = INFORMATICS_QUESTIONS.map((q, i) => {
@@ -910,11 +1331,11 @@ function renderStudentShell(data) {
   const path = parseRoute();
   const segs = path.split("/").filter(Boolean);
   const inner = segs[1] === "test" && segs[2] ? renderStudentTestPage(data, decodeURIComponent(segs[2])) : renderStudentDashboardContent(data);
-  return `${renderHeader(data)}<div class="admin-layout"><div class="container admin-layout-inner"><main class="admin-main admin-main--full">${inner}</main></div></div>${renderFooter(data)}`;
+  return `${renderHeader(data)}<div class="admin-layout admin-layout--student"><div class="container admin-layout-inner"><main class="admin-main admin-main--full admin-main--student">${inner}</main></div></div>${renderFooter(data)}${renderToast()}`;
 }
 
 function renderLanding(data) {
-  return `${renderHeader(data)}<main>${renderHero(data)}${renderFeatures(data)}${renderAiTutorSection(data)}</main>${renderFooter(data)}${renderAuthModal(data)}`;
+  return `${renderHeader(data)}<main>${renderHero(data)}${renderAiTutorSection(data)}</main>${renderFooter(data)}${renderAuthModal(data)}${renderToast()}`;
 }
 
 function renderApp(data) {
@@ -937,18 +1358,34 @@ function renderApp(data) {
     return renderApp(data);
   }
 
+  const appShell =
+    state.currentUser?.role === "admin" && segments[0] === "admin"
+      ? "admin"
+      : state.currentUser && state.currentUser.role === "student" && segments[0] === "student"
+        ? "student"
+        : "landing";
+  if (appShell === "landing" && lastAppShell && lastAppShell !== "landing") {
+    state.chatSessionId = createSessionId();
+    state.chatMessages = [];
+  }
+
   if (state.currentUser?.role === "admin" && segments[0] === "admin") {
+    const { section: adminSec } = parseAdminRoute(path);
+    if (adminSec !== "schedule") state.scheduleTestPreviewOpen = false;
     state.authModal = null;
     app.innerHTML = renderAdminShell(data);
   } else if (state.currentUser && state.currentUser.role === "student" && segments[0] === "student") {
+    state.scheduleTestPreviewOpen = false;
     state.authModal = null;
     app.innerHTML = renderStudentShell(data);
   } else {
+    state.scheduleTestPreviewOpen = false;
     app.innerHTML = renderLanding(data);
   }
 
-  document.body.style.overflow = state.authModal ? "hidden" : "";
+  document.body.style.overflow = state.authModal || state.scheduleTestPreviewOpen ? "hidden" : "";
   document.documentElement.lang = state.lang === "kz" ? "kk" : "ru";
+  lastAppShell = appShell;
   attachEvents(data);
 }
 
@@ -1057,6 +1494,10 @@ function attachEvents(data) {
     document.removeEventListener("keydown", authEscapeHandler);
     authEscapeHandler = null;
   }
+  if (schedulePreviewEscapeHandler) {
+    document.removeEventListener("keydown", schedulePreviewEscapeHandler);
+    schedulePreviewEscapeHandler = null;
+  }
 
   document.querySelector("[data-burger]")?.addEventListener("click", () => {
     state.mobileMenuOpen = !state.mobileMenuOpen;
@@ -1064,6 +1505,12 @@ function attachEvents(data) {
   });
   document.querySelector("[data-lang-toggle]")?.addEventListener("click", () => {
     state.lang = state.lang === "kz" ? "ru" : "kz";
+    savePreferredLang();
+    renderApp(data);
+  });
+  document.querySelector("[data-theme-toggle]")?.addEventListener("click", () => {
+    state.themeMode = state.themeMode === "dark" ? "light" : "dark";
+    savePreferredThemeMode();
     renderApp(data);
   });
   document.querySelector("[data-logout]")?.addEventListener("click", () => {
@@ -1072,15 +1519,15 @@ function attachEvents(data) {
     renderApp(data);
   });
 
+  document.querySelector("[data-toast-close]")?.addEventListener("click", () => {
+    state.toast = null;
+    renderApp(data);
+  });
+
   document.querySelectorAll("[data-action]").forEach((el) => {
     el.addEventListener("click", (e) => {
       e.preventDefault();
       const id = el.getAttribute("data-action");
-      if (id === "signup") {
-        state.authModal = "register";
-        state.mobileMenuOpen = false;
-        return renderApp(data);
-      }
       if (id === "login") {
         state.authModal = "login";
         state.mobileMenuOpen = false;
@@ -1112,7 +1559,23 @@ function attachEvents(data) {
   });
 
   document.querySelectorAll("[data-hero-btn]").forEach((btn) => {
-    btn.addEventListener("click", () => scrollToId("features"));
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const id = btn.getAttribute("data-hero-btn");
+      if (id === "student" || id === "school") {
+        if (!state.currentUser) {
+          state.authModal = "login";
+          state.mobileMenuOpen = false;
+          renderApp(data);
+          return;
+        }
+        if (state.currentUser.role === "admin") navigate("/admin");
+        else navigate("/student");
+        renderApp(data);
+        return;
+      }
+      scrollToId("ai-tutor");
+    });
   });
 
   const closeAuthModal = () => {
@@ -1125,16 +1588,6 @@ function attachEvents(data) {
     if (e.target === e.currentTarget) closeAuthModal();
   });
   document.querySelector("[data-auth-modal-close]")?.addEventListener("click", () => closeAuthModal());
-  document.querySelectorAll("[data-auth-tab]").forEach((el) => {
-    el.addEventListener("click", () => {
-      const tab = el.getAttribute("data-auth-tab");
-      if (tab === "register" || tab === "login") {
-        state.authModal = tab;
-        renderApp(data);
-      }
-    });
-  });
-
   if (state.authModal) {
     authEscapeHandler = (e) => {
       if (e.key !== "Escape") return;
@@ -1147,8 +1600,8 @@ function attachEvents(data) {
 
   const demoFullProductMessage = (label) =>
     state.lang === "kz"
-      ? `${label}\n\nБұл локалды демо. Толық тестілеу, тренажёрлар және аналитика: https://edoox.com`
-      : `${label}\n\nЛокальная демо. Полное тестирование и аналитика: https://edoox.com`;
+      ? `${label}\n\nБұл локалды демо. Толық тестілеу, тренажёрлар және аналитика: https://edumetrics.com`
+      : `${label}\n\nЛокальная демо. Полное тестирование и аналитика: https://edumetrics.com`;
 
   document.querySelectorAll("[data-sub]").forEach((el) =>
     el.addEventListener("click", (e) => {
@@ -1157,41 +1610,6 @@ function attachEvents(data) {
       alert(demoFullProductMessage(label));
     })
   );
-
-  document.querySelectorAll("[data-feature]").forEach((el) =>
-    el.addEventListener("click", () => {
-      const label = t(data.features?.[Number(el.getAttribute("data-feature"))]?.title);
-      alert(demoFullProductMessage(label));
-    })
-  );
-
-  document.querySelector("[data-register-form]")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const fullName = form.fullName.value.trim();
-    const email = form.email.value.trim();
-    const login = form.login.value.trim();
-    const password = form.password.value;
-    const confirm = form.confirm.value;
-    if (password.length < 4) return alert("Password min 4");
-    if (password !== confirm) return alert("Passwords do not match");
-    const users = getUsers();
-    if (users.some((u) => u.login === login)) return alert("Login already exists");
-    users.push({
-      fullName,
-      email,
-      login,
-      passwordHash: hashPassword(password),
-      role: "student",
-      grade: "",
-      letter: ""
-    });
-    saveUsers(users);
-    alert(state.lang === "kz" ? "Тіркелу сәтті!" : "Регистрация успешна!");
-    form.reset();
-    state.authModal = null;
-    renderApp(data);
-  });
 
   document.querySelector("[data-login-form]")?.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -1280,12 +1698,6 @@ function attachEvents(data) {
     renderApp(data);
   });
 
-  document.querySelector("[data-letter-pick]")?.addEventListener("change", (e) => {
-    state.scheduleDraft.selectedLetter = e.target.value || "";
-    pruneScheduleStudentSelection();
-    renderApp(data);
-  });
-
   const schedForm = document.querySelector("[data-schedule-form]");
   schedForm?.addEventListener("input", (e) => {
     if (e.target.matches('input[name="scheduleTime"]')) {
@@ -1304,16 +1716,6 @@ function attachEvents(data) {
       const v = rmG.getAttribute("data-remove-grade");
       state.scheduleDraft.selectedGrades = state.scheduleDraft.selectedGrades.filter((x) => x !== v);
       state.scheduleFormErrors.grades = false;
-      const lettersNow = getLettersForScheduleGrades(state.scheduleDraft.selectedGrades);
-      if (state.scheduleDraft.selectedLetter && !lettersNow.includes(state.scheduleDraft.selectedLetter)) {
-        state.scheduleDraft.selectedLetter = "";
-      }
-      pruneScheduleStudentSelection();
-      renderApp(data);
-      return;
-    }
-    if (e.target.closest("[data-remove-letter]")) {
-      state.scheduleDraft.selectedLetter = "";
       pruneScheduleStudentSelection();
       renderApp(data);
       return;
@@ -1349,18 +1751,8 @@ function attachEvents(data) {
     }
     if (e.target.closest("[data-schedule-preview]")) {
       e.preventDefault();
-      const st = data.scheduleTest ?? {};
-      const preview =
-        `${t({ kz: "Алдын ала қарау", ru: "Предпросмотр" })}\n\n` +
-        `${t(st.fields?.subjectWithInformatics)}\n` +
-        `${t({ kz: "Күн", ru: "Дата" })}: ${state.scheduleSelectedDate}\n` +
-        `${t(st.gradesLabel)}: ${state.scheduleDraft.selectedGrades.map(scheduleGradeLabel).join(", ") || "—"}\n` +
-        `${t(st.lettersLabel)}: ${state.scheduleDraft.selectedLetter || t(st.fields?.letters)}\n` +
-        `${t(st.studentsLabel)}: ${state.scheduleDraft.selectedStudentLogins.length}\n` +
-        `${t(st.fields?.language)}: ${String(document.getElementById("sched-lang")?.value || "—")}\n` +
-        `${t(st.fields?.startTime)}: ${state.scheduleStartTime}\n` +
-        `${t(st.fields?.availability)}: ${String(document.getElementById("sched-dur")?.selectedOptions?.[0]?.text || "—")}`;
-      alert(preview);
+      state.scheduleTestPreviewOpen = true;
+      renderApp(data);
     }
   });
 
@@ -1375,6 +1767,12 @@ function attachEvents(data) {
     const tm = String(fd.get("scheduleTime") || "");
     if (!tm) state.scheduleFormErrors.startTime = true;
     if (!String(fd.get("durationHours") || "")) state.scheduleFormErrors.duration = true;
+    if (state.scheduleSelectedDate < getTodayISODate()) {
+      showToast(data, state.lang === "kz" ? "Өткен күнді таңдауға болмайды." : "Нельзя выбрать прошедшую дату.", "error", 3200);
+      state.scheduleSelectedDate = getTodayISODate();
+      renderApp(data);
+      return;
+    }
     if (Object.keys(state.scheduleFormErrors).length) {
       renderApp(data);
       return;
@@ -1390,7 +1788,7 @@ function attachEvents(data) {
       subject: String(fd.get("subject") || "informatics"),
       questionCount: INFORMATICS_QUESTIONS.length,
       grades: [...state.scheduleDraft.selectedGrades],
-      letter: state.scheduleDraft.selectedLetter || null,
+      letter: null,
       studentLogins: [...state.scheduleDraft.selectedStudentLogins],
       studentsSnapshot: selectedUsers.map((u) => ({
         login: u.login,
@@ -1405,7 +1803,12 @@ function attachEvents(data) {
     pushScheduledTest(entry);
     state.scheduleFormErrors = {};
     state.scheduleDraft.selectedStudentLogins = [];
-    alert(state.lang === "kz" ? "Жоспар сақталды." : "План сохранён.");
+    showToast(
+      data,
+      state.lang === "kz" ? "Тест сәтті жоспарланды. Оқушыларға қолжетімді болады." : "Тест успешно запланирован. Он станет доступен ученикам.",
+      "success",
+      3200
+    );
     renderApp(data);
   });
 
@@ -1445,7 +1848,28 @@ function attachEvents(data) {
     renderApp(data);
   });
 
-  document.querySelector(".schedule-link")?.addEventListener("click", (e) => e.preventDefault());
+  document.querySelector("[data-schedule-preview-overlay]")?.addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) {
+      state.scheduleTestPreviewOpen = false;
+      renderApp(data);
+    }
+  });
+  document.querySelectorAll("[data-schedule-preview-close]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.scheduleTestPreviewOpen = false;
+      renderApp(data);
+    });
+  });
+  if (state.scheduleTestPreviewOpen) {
+    schedulePreviewEscapeHandler = (e) => {
+      if (e.key !== "Escape") return;
+      document.removeEventListener("keydown", schedulePreviewEscapeHandler);
+      schedulePreviewEscapeHandler = null;
+      state.scheduleTestPreviewOpen = false;
+      renderApp(data);
+    };
+    document.addEventListener("keydown", schedulePreviewEscapeHandler);
+  }
 
   document.querySelector("[data-export-excel]")?.addEventListener("click", () => {
     const list = getStudentUsers();
@@ -1533,6 +1957,8 @@ function renderFileModeLoader() {
 }
 
 async function init() {
+  restorePreferredLang();
+  restorePreferredThemeMode();
   seedDefaultAdmin();
   seedDemoStudents();
   state.currentUser = restoreSessionUser();
