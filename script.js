@@ -10,6 +10,58 @@
   themeMode: "edumetrics:themeMode"
 };
 
+/** Демо-ученики (seed) — тот же список, что в seedDemoStudents. */
+const DEMO_STUDENT_SEEDS = [
+  {
+    fullName: "test client 1",
+    email: "test1@demo.local",
+    login: "G8iF34902@school4902",
+    plainPassword: "8177644",
+    grade: "11",
+    letter: "A"
+  },
+  {
+    fullName: "test client 2",
+    email: "test2@demo.local",
+    login: "ddKGn4902@school4902",
+    plainPassword: "9051943",
+    grade: "11",
+    letter: "A"
+  },
+  {
+    fullName: "test client 3",
+    email: "test3@demo.local",
+    login: "Zxiqd4902@school4902",
+    plainPassword: "3391902",
+    grade: "11",
+    letter: "A"
+  },
+  {
+    fullName: "test client 4",
+    email: "test4@demo.local",
+    login: "CsPCK4902@school4902",
+    plainPassword: "8931321",
+    grade: "11",
+    letter: "A"
+  },
+  {
+    fullName: "test client 5",
+    email: "test5@demo.local",
+    login: "G8D34902@school4902",
+    plainPassword: "5621840",
+    grade: "10",
+    letter: "A"
+  },
+  {
+    fullName: "tester",
+    email: "tester@demo.local",
+    login: "tester",
+    plainPassword: "123456",
+    grade: "11",
+    letter: "A"
+  }
+];
+
 /** 25 школьных вопросов по информатике (автопроверка). topic — тема для отчёта «повторить / усвоение». */
 const INFORMATICS_QUESTIONS = [
   {
@@ -601,6 +653,10 @@ function hashPassword(value) {
   }
 }
 
+function loginEquals(a, b) {
+  return String(a ?? "").toLowerCase() === String(b ?? "").toLowerCase();
+}
+
 function getUsers() {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.users);
@@ -634,61 +690,53 @@ function seedDefaultAdmin() {
   saveUsers(users);
 }
 
-function seedDemoStudents() {
-  const demos = [
-    {
-      fullName: "test client 1",
-      email: "test1@demo.local",
-      login: "G8iF34902@school4902",
-      plainPassword: "8177644",
-      grade: "11",
-      letter: "A"
-    },
-    {
-      fullName: "test client 2",
-      email: "test2@demo.local",
-      login: "ddKGn4902@school4902",
-      plainPassword: "9051943",
-      grade: "11",
-      letter: "A"
-    },
-    {
-      fullName: "test client 3",
-      email: "test3@demo.local",
-      login: "Zxiqd4902@school4902",
-      plainPassword: "3391902",
-      grade: "11",
-      letter: "A"
-    },
-    {
-      fullName: "test client 4",
-      email: "test4@demo.local",
-      login: "CsPCK4902@school4902",
-      plainPassword: "8931321",
-      grade: "11",
-      letter: "A"
-    },
-    {
-      fullName: "test client 5",
-      email: "test5@demo.local",
-      login: "G8D34902@school4902",
-      plainPassword: "5621840",
-      grade: "10",
-      letter: "A"
-    },
-    {
-      fullName: "tester",
-      email: "tester@demo.local",
-      login: "tester",
-      plainPassword: "123456",
-      grade: "11",
-      letter: "A"
+/** Если тест запланировали до появления нового демо-ученика, добавляем его в studentLogins (тот же класс, информатика). */
+function syncDemoStudentsIntoScheduledTests() {
+  let arr = [];
+  try {
+    arr = JSON.parse(localStorage.getItem(STORAGE_KEYS.scheduledTests) || "[]");
+  } catch {
+    return;
+  }
+  if (!Array.isArray(arr) || !arr.length) return;
+  const users = getUsers();
+  let changed = false;
+  for (const e of arr) {
+    if (e.testType !== "subject" || e.subject !== "informatics") continue;
+    const grades = (e.grades || []).map(String);
+    for (const d of DEMO_STUDENT_SEEDS) {
+      if (!grades.includes(String(d.grade))) continue;
+      if ((e.studentLogins || []).some((l) => loginEquals(l, d.login))) continue;
+      const u = users.find((x) => x.role === "student" && loginEquals(x.login, d.login));
+      if (!u) continue;
+      e.studentLogins = [...(e.studentLogins || []), u.login];
+      e.studentsSnapshot = Array.isArray(e.studentsSnapshot) ? e.studentsSnapshot : [];
+      if (!e.studentsSnapshot.some((s) => loginEquals(s.login, u.login))) {
+        e.studentsSnapshot.push({
+          login: u.login,
+          fullName: u.fullName,
+          grade: u.grade,
+          letter: u.letter
+        });
+      }
+      changed = true;
     }
-  ];
+  }
+  if (changed) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.scheduledTests, JSON.stringify(arr));
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+function seedDemoStudents() {
+  const demos = DEMO_STUDENT_SEEDS;
   const users = getUsers();
   let changed = false;
   for (const d of demos) {
-    if (users.some((u) => u.login === d.login)) continue;
+    if (users.some((u) => loginEquals(u.login, d.login))) continue;
     users.push({
       fullName: d.fullName,
       email: d.email,
@@ -1042,8 +1090,15 @@ function renderInformaticsTopicMasteryAdminHTML(result, data) {
 }
 
 function studentAssignedToSchedule(entry, user) {
-  if (!user?.login || !entry?.studentLogins?.includes(user.login)) return false;
-  return entry.testType === "subject" && entry.subject === "informatics";
+  if (!user?.login || entry?.testType !== "subject" || entry?.subject !== "informatics") return false;
+  const ulogin = user.login;
+  const logins = entry.studentLogins || [];
+  if (logins.some((l) => loginEquals(l, ulogin))) return true;
+  if (entry.includeAllStudentsInGrades) {
+    const grades = (entry.grades || []).map(String);
+    return grades.includes(String(user.grade ?? ""));
+  }
+  return false;
 }
 
 function getScheduledTestsForStudent(user) {
@@ -1616,7 +1671,7 @@ function attachEvents(data) {
     const form = e.currentTarget;
     const login = form.login.value.trim();
     const password = form.password.value;
-    const found = getUsers().find((u) => u.login === login && u.passwordHash === hashPassword(password));
+    const found = getUsers().find((u) => loginEquals(u.login, login) && u.passwordHash === hashPassword(password));
     if (!found) return alert(state.lang === "kz" ? "Логин немесе құпиясөз қате" : "Неверный логин или пароль");
     const role = found.role || (found.login === "admin" ? "admin" : "student");
     saveSessionUser({
@@ -1780,6 +1835,11 @@ function attachEvents(data) {
     const timePart = tm.length === 5 ? `${tm}:00` : tm;
     const startTime = `${state.scheduleSelectedDate}T${timePart}`;
     const selectedUsers = getStudentUsers().filter((u) => state.scheduleDraft.selectedStudentLogins.includes(u.login));
+    const filteredStuds = getScheduleFilteredStudentList();
+    const includeAllStudentsInGrades =
+      filteredStuds.length > 0 &&
+      filteredStuds.length === state.scheduleDraft.selectedStudentLogins.length &&
+      filteredStuds.every((u) => state.scheduleDraft.selectedStudentLogins.includes(u.login));
     const entry = {
       id: createSessionId(),
       createdAt: new Date().toISOString(),
@@ -1789,6 +1849,7 @@ function attachEvents(data) {
       questionCount: INFORMATICS_QUESTIONS.length,
       grades: [...state.scheduleDraft.selectedGrades],
       letter: null,
+      includeAllStudentsInGrades,
       studentLogins: [...state.scheduleDraft.selectedStudentLogins],
       studentsSnapshot: selectedUsers.map((u) => ({
         login: u.login,
@@ -1961,6 +2022,7 @@ async function init() {
   restorePreferredThemeMode();
   seedDefaultAdmin();
   seedDemoStudents();
+  syncDemoStudentsIntoScheduledTests();
   state.currentUser = restoreSessionUser();
   const dataUrl = new URL("data.json", window.location.href);
   try {
