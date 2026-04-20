@@ -4,8 +4,8 @@
     "domain": "edumetrics.com",
     "language": ["kz", "ru"],
     "theme": {
-      "primaryColor": "#6C4CF1",
-      "secondaryColor": "#F5F6FA",
+      "primaryColor": "#00AFCA",
+      "secondaryColor": "#EAF9FF",
       "font": "Inter, sans-serif"
     }
   },
@@ -51,6 +51,7 @@
     "sidebar": [
       { "id": "dashboard", "label": { "kz": "Басты бет (кабинет)", "ru": "Главная (кабинет)" } },
       { "id": "schedule", "label": { "kz": "Тестті жоспарлау", "ru": "Планирование теста" } },
+      { "id": "scheduled", "label": { "kz": "Жоспарланған тесттер", "ru": "Запланированные тесты" } },
       { "id": "testBuilder", "label": { "kz": "Тест құрастырушы", "ru": "Конструктор тестов" } },
       { "id": "accounts", "label": { "kz": "Оқушылар құрамы", "ru": "Состав учащихся" } },
       { "id": "results", "label": { "kz": "Қорытындылар", "ru": "Результаты" } }
@@ -91,6 +92,8 @@
     "submit": { "kz": "Жоспарлау", "ru": "Запланировать" },
     "calendarMonth": { "kz": "Сәуір 2026", "ru": "Апрель 2026" },
     "selectAllStudents": { "kz": "Барлық қолжетімді оқушыларды таңдау", "ru": "Выбрать всех доступных учеников" },
+    "selectAllAccounts": { "kz": "Барлық аккаунттарға тағайындау", "ru": "Назначить всем аккаунтам" },
+    "scheduledPageTitle": { "kz": "Жоспарланған тесттер", "ru": "Запланированные тесты" },
     "previewButton": { "kz": "Өзіңіз көру (алдын ала қарау)", "ru": "Попробовать самому (предпросмотр)" },
     "gradesLabel": { "kz": "Сынып", "ru": "Класс" },
     "lettersLabel": { "kz": "Литер", "ru": "Литера" },
@@ -274,8 +277,8 @@
     },
     "buttons": [],
     "socials": [
-      { "id": "instagram", "label": "Instagram" },
-      { "id": "tiktok", "label": "TikTok" }
+      { "id": "instagram", "label": "Instagram", "url": "https://www.instagram.com/koktalzhbbm?igsh=YXM2OWw2MjZpMjdt" },
+      { "id": "tiktok", "label": "TikTok", "url": "https://www.tiktok.com/@koktal_zhbbm2017?_r=1&_t=ZS-95hLgN2QaX9" }
     ],
     "copyright": "KOKTAL ZHBBM 2025 2026"
   }

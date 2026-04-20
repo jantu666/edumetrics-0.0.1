@@ -11,55 +11,103 @@
 };
 
 /** Демо-ученики (seed) — тот же список, что в seedDemoStudents. */
-const DEMO_STUDENT_SEEDS = [
+const BASE_DEMO_STUDENT_SEEDS = [
   {
-    fullName: "test client 1",
-    email: "test1@demo.local",
-    login: "G8iF34902@school4902",
-    plainPassword: "8177644",
-    grade: "11",
-    letter: "A"
-  },
-  {
-    fullName: "test client 2",
-    email: "test2@demo.local",
-    login: "ddKGn4902@school4902",
-    plainPassword: "9051943",
-    grade: "11",
-    letter: "A"
-  },
-  {
-    fullName: "test client 3",
-    email: "test3@demo.local",
-    login: "Zxiqd4902@school4902",
-    plainPassword: "3391902",
-    grade: "11",
-    letter: "A"
-  },
-  {
-    fullName: "test client 4",
-    email: "test4@demo.local",
-    login: "CsPCK4902@school4902",
-    plainPassword: "8931321",
-    grade: "11",
-    letter: "A"
-  },
-  {
-    fullName: "test client 5",
-    email: "test5@demo.local",
-    login: "G8D34902@school4902",
-    plainPassword: "5621840",
-    grade: "10",
-    letter: "A"
-  },
-  {
-    fullName: "tester",
+    fullName: "Аккаунт Тестировщика",
     email: "tester@demo.local",
     login: "tester",
     plainPassword: "123456",
     grade: "11",
     letter: "A"
   }
+];
+
+/** Ученики из Excel (login: stu001.., password: 123001..). */
+const EXCEL_STUDENT_ROWS = [
+  { fullName: "\u0413\u0430\u043b\u044b\u043c\u0436\u0430\u043d \u0411\u0430\u044f\u0437\u0438\u0442 \u0415\u0440\u0431\u043e\u043b\u0443\u043b\u044b", grade: "5" },
+  { fullName: "\u0416\u0443\u0441\u0443\u043f\u043e\u0432\u0430 \u0416\u0430\u043d\u0435\u043b\u044c \u041a\u0430\u0437\u044b\u0431\u0435\u043a\u043e\u0432\u043d\u0430", grade: "5" },
+  { fullName: "\u041a\u043e\u043d\u043e\u0440\u0431\u0430\u0435\u0432 \u041d\u0443\u0440\u043c\u0443\u0445\u0430\u043c\u043c\u0435\u0434 \u041c\u0430\u0440\u0430\u0442\u043e\u0432\u0438\u0447", grade: "5" },
+  { fullName: "\u0423\u0441\u043a\u0435\u043d\u043e\u0432 \u0410\u0441\u0445\u0430\u0442 \u0411\u0430\u0443\u0440\u0436\u0430\u043d\u043e\u0432\u0438\u0447", grade: "5" },
+  { fullName: "\u0416\u0410\u0419\u041b\u0418\u0411\u0410\u0415\u0412\u0410 \u0414\u0418\u0410\u041d\u0410 \u0415\u0420\u0411\u041e\u041b\u041a\u042b\u0417\u042b", grade: "6" },
+  { fullName: "\u0418\u0441\u043a\u0430\u043a\u043e\u0432\u0430 \u0410\u0440\u0443\u043d\u0430 \u041c\u0430\u0440\u0430\u0442\u043a\u044b\u0437\u044b", grade: "6" },
+  { fullName: "\u041a\u0410\u0414\u042b\u0420\u041a\u0410\u041d\u041e\u0412 \u0410\u042f\u041d \u0422\u0415\u041c\u0418\u0420\u0425\u0410\u041d\u041e\u0412\u0418\u0427", grade: "6" },
+  { fullName: "\u041e\u0421\u041f\u0410\u041d \u041d\u04b0\u0420\u0410\u0421\u042b\u041b \u0411\u0410\u049a\u042b\u0422\u0418\u042f\u0420\u04b0\u041b\u042b", grade: "6" },
+  { fullName: "\u04e8\u041c\u0406\u0420\u0411\u0415\u041a \u0411\u0418\u0411\u0406\u041d\u04b0\u0420 \u0410\u0417\u0410\u041c\u0410\u0422\u049a\u042b\u0417\u042b", grade: "6" },
+  { fullName: "\u0422\u0410\u0418\u041f\u041e\u0412 \u041d\u0423\u0420\u0414\u0410\u0423\u041b\u0415\u0422 \u0410\u0417\u0410\u041c\u0410\u0422\u041e\u0412\u0418\u0427", grade: "6" },
+  { fullName: "\u0422\u0430\u0441\u044b\u0431\u0430\u0435\u0432 \u0410\u0440\u0441\u0435\u043d \u0410\u043b\u0435\u043a\u0441\u0435\u0435\u0432\u0438\u0447", grade: "6" },
+  { fullName: "\u0428\u0410\u0419\u041c\u0415\u0420\u0414\u0415\u041d \u0416\u0410\u041d\u0415\u041b\u042c \u0410\u0420\u041d\u0423\u0420\u041a\u042b\u0417\u042b", grade: "6" },
+  { fullName: "\u0410\u0445\u043c\u0435\u0442\u0436\u0430\u043d\u043e\u0432\u0430 \u0410\u0439\u0436\u0443\u043b\u0434\u044b\u0437 \u041c\u0438\u0440\u0430\u043c\u0431\u0435\u043a\u043a\u044b\u0437\u044b", grade: "7" },
+  { fullName: "\u0414\u0410\u0423\u0420\u0415\u041c\u0411\u0415\u041a\u041e\u0412 \u041c\u0410\u0420\u0410\u041b \u0410\u0417\u0410\u041c\u0410\u0422\u041e\u0412\u0418\u0427", grade: "7" },
+  { fullName: "\u0414\u042e\u0421\u0415\u041c\u0411\u0415\u041a\u041e\u0412 \u0410\u0414\u0418\u041b\u042c\u0411\u0415\u041a \u0410\u0419\u0422\u0411\u0410\u0415\u0412\u0418\u0427", grade: "7" },
+  { fullName: "\u049a\u0410\u0414\u042b\u0420\u049a\u0410\u041d \u0410\u042f\u0423\u041b\u042b\u041c \u0422\u0415\u041c\u0406\u0420\u0425\u0410\u041d\u049a\u042b\u0417\u042b", grade: "7" },
+  { fullName: "\u041c\u0423\u0425\u0410\u041c\u0415\u0414\u0416\u0410\u041d \u0413\u0423\u041b\u041d\u04b0\u0420 \u0422\u0410\u041b\u0418\u041f\u049a\u042b\u0417\u042b", grade: "7" },
+  { fullName: "\u041c\u04b0\u0420\u0410\u0422 \u0416\u0410\u041d\u0421\u0410\u042f \u0416\u0410\u041d\u0414\u041e\u0421\u049a\u042b\u0417\u042b", grade: "7" },
+  { fullName: "\u0422\u0410\u0418\u041f\u041e\u0412\u0410 \u0418\u041d\u0416\u0423 \u041c\u0410\u0420\u0410\u0422\u041e\u0412\u041d\u0410", grade: "7" },
+  { fullName: "\u0411\u0410\u0428\u041a\u0415\u041d\u0422\u0410\u0415\u0412\u0410 \u0416\u0410\u041d\u0410\u0413\u0423\u041b\u042c \u041c\u0423\u0420\u0410\u0422\u0411\u0415\u041a\u041e\u0412\u041d\u0410", grade: "8" },
+  { fullName: "\u0411\u04e8\u041b\u0422\u0406\u0420\u0406\u041a \u041c\u0410\u0492\u041c\u0415\u0422 \u0414\u0410\u0423\u041b\u0415\u0422\u04b0\u041b\u042b", grade: "8" },
+  { fullName: "\u0414\u0410\u0423\u0420\u0415\u041c\u0411\u0415\u041a\u041e\u0412\u0410 \u0421\u0415\u0417\u0418\u041c\u0413\u0423\u041b\u042c \u0410\u0417\u0410\u041c\u0410\u0422\u041e\u0412\u041d\u0410", grade: "8" },
+  { fullName: "\u0418\u0421\u041a\u0410\u041a\u041e\u0412\u0410 \u0410\u0418\u0414\u0410 \u041c\u0410\u0420\u0410\u0422\u041a\u042b\u0417\u042b", grade: "8" },
+  { fullName: "\u041c\u04b0\u0421\u0422\u0410\u0424\u0410 \u0410\u041b\u0414\u0418\u042f\u0420 \u0421\u0415\u0420\u0406\u041a\u04b0\u041b\u042b", grade: "8" },
+  { fullName: "\u041e\u0421\u041f\u0410\u041d \u0415\u0420\u0410\u0421\u042b\u041b \u0411\u0410\u041a\u042b\u0422\u0418\u042f\u0420\u04b0\u041b\u042b", grade: "8" },
+  { fullName: "\u0420\u0410\u0425\u041c\u0415\u0422\u041e\u0412\u0410 \u0421\u0410\u0411\u0418\u041d\u0410 \u0422\u041b\u0415\u0423\u041a\u0410\u0411\u0410\u041a\u041e\u0412\u041d\u0410", grade: "8" },
+  { fullName: "\u0413\u0410\u041b\u042b\u041c\u0416\u0410\u041d \u041c\u0415\u0420\u0423\u0415\u0420\u0422 \u0415\u0420\u0411\u041e\u041b\u049a\u042b\u0417\u042b", grade: "9" },
+  { fullName: "\u0414\u0410\u0423\u0420\u0415\u041c\u0411\u0415\u041a\u041e\u0412 \u0421\u0410\u041d\u0410\u0422 \u041a\u0410\u041d\u0410\u0422\u041e\u0412\u0418\u0427", grade: "9" },
+  { fullName: "\u041a\u0443\u043b\u044c\u0442\u0430\u0431\u0438\u043d\u0430 \u0410\u043a\u043d\u0438\u0435\u0442 \u0410\u043b\u043c\u0430\u0442\u043e\u0432\u043d\u0430", grade: "9" },
+  { fullName: "\u049a\u0410\u0415\u0420\u049a\u0410\u041d \u041c\u0410\u0414\u0418\u041d\u0410 \u049a\u0410\u041d\u0410\u0422\u049a\u042b\u0417\u042b", grade: "9" },
+  { fullName: "\u041c\u04b0\u0425\u0410\u041c\u0415\u0414\u0416\u0410\u041d \u0413\u04ae\u041b\u0414\u0415\u041d \u0422\u04d8\u041b\u0406\u041f\u049a\u042b\u0417\u042b", grade: "9" },
+  { fullName: "\u04e8\u041c\u0406\u0420\u0411\u0415\u041a \u0410\u049a\u041d\u04b0\u0420 \u0410\u0417\u0410\u041c\u0410\u0422\u049a\u042b\u0417\u042b", grade: "9" },
+  { fullName: "\u0421\u0415\u0419\u0422\u041a\u0410\u041b\u0418 \u0424\u0410\u0422\u0418\u041c\u0410 \u0413\u0410\u041b\u0418\u049a\u042b\u0417\u042b", grade: "9" },
+  { fullName: "\u0422\u0435\u043c\u0456\u0440\u0442\u0430\u0441 \u0416\u04d9\u043d\u0456\u0431\u0435\u043a \u041c\u0430\u0440\u0430\u0442\u04b1\u043b\u044b", grade: "9" },
+  { fullName: "\u0428\u04d9\u0439\u043c\u0435\u0440\u0434\u0435\u043d \u0415\u043b\u0445\u0430\u043d \u0410\u0440\u043d\u0443\u0440\u04b1\u043b\u044b", grade: "9" },
+  { fullName: "\u0410\u0411\u0414\u0423\u041b\u041b\u0410\u0415\u0412\u0410 \u041d\u0410\u0417\u0416\u0410\u041d \u0411\u0410\u0425\u0410\u0422\u0416\u0410\u041d\u041e\u0412\u041d\u0410", grade: "10" },
+  { fullName: "\u0414\u042e\u0421\u0415\u041c\u0411\u0415\u041a\u041e\u0412 \u0413\u0410\u0411\u0418\u0422 \u0410\u0419\u0422\u0411\u0410\u0415\u0412\u0418\u0427", grade: "10" },
+  { fullName: "\u0416\u0410\u041d\u0421\u0423\u041b\u0422\u0410\u041d \u0414\u0410\u0423\u0420\u0415\u041d \u041c\u0410\u041a\u0421\u0423\u0422\u04b0\u041b\u042b", grade: "10" },
+  { fullName: "\u0416\u0423\u0421\u0423\u041f\u041e\u0412\u0410 \u0421\u042b\u041c\u0411\u0410\u0422 \u0422\u0415\u041b\u0415\u0423\u0425\u0410\u041d\u041e\u0412\u041d\u0410", grade: "10" },
+  { fullName: "\u0418\u0413\u041b\u0418\u041a \u0406\u041b\u0418\u042f\u0421 \u0410\u0421\u041b\u0410\u041d\u04b0\u041b\u042b", grade: "10" },
+  { fullName: "\u041a\u0410\u0411\u0418\u041c\u041e\u041b\u0414\u0410 \u0413\u04ae\u041b\u041d\u04b0\u0420 \u041d\u0423\u0420\u041b\u0410\u041d\u049a\u042b\u0417\u042b", grade: "10" },
+  { fullName: "\u049a\u0410\u0415\u0420\u049a\u0410\u041d \u0410\u0411\u0417\u0410\u041b \u049a\u0410\u041d\u0410\u0422\u04b0\u041b\u042b", grade: "10" },
+  { fullName: "\u0420\u0410\u0425\u041c\u0415\u0422\u041e\u0412\u0410 \u041a\u0410\u041c\u0418\u041b\u0410 \u0422\u041b\u0415\u0423\u041a\u0410\u0411\u0410\u041a\u041e\u0412\u041d\u0410", grade: "10" },
+  { fullName: "\u0423\u0421\u041f\u0410\u041d\u041e\u0412 \u0415\u041b\u041d\u0423\u0420 \u0410\u0414\u0418\u041b\u0425\u0410\u041d\u0423\u041b\u042b", grade: "10" },
+  { fullName: "\u0416\u0423\u0421\u0423\u041f\u041e\u0412\u0410 \u041a\u042b\u041c\u0411\u0410\u0422 \u0422\u0415\u041b\u0415\u0423\u0425\u0410\u041d\u041e\u0412\u041d\u0410", grade: "11" },
+  { fullName: "\u0418\u0421\u041b\u042f\u041c \u041d\u0423\u0420\u0418\u0421\u041b\u0410\u041c \u0415\u0420\u0411\u041e\u041b\u04b0\u041b\u042b", grade: "11" },
+  { fullName: "\u041a\u041e\u041d\u041e\u0420\u0411\u0410\u0415\u0412\u0410 \u0414\u0410\u041d\u0410\u0413\u0423\u041b\u042c \u041c\u0410\u0420\u0410\u0422\u041e\u0412\u041d\u0410", grade: "11" },
+  { fullName: "\u041e\u041c\u0418\u0420\u0411\u0415\u041a \u0410\u049a\u0415\u0420\u041a\u0415 \u0410\u0417\u0410\u041c\u0410\u0422\u049a\u042b\u0417\u042b", grade: "11" },
+  { fullName: "\u041e\u0421\u041f\u0410\u041d \u0410\u042f\u0413\u041e\u0417 \u0411\u0410\u049a\u042b\u0422\u0418\u042f\u0420\u049a\u042b\u0417\u042b", grade: "11" },
+  { fullName: "\u0421\u0415\u0419\u0414\u0410\u0413\u0410\u041b\u0418\u0415\u0412\u0410 \u0418\u041d\u0410\u0411\u0410\u0422 \u041c\u0410\u0420\u0410\u0422 \u041a\u042b\u0417\u042b", grade: "11" },
+  { fullName: "\u0422\u0410\u0418\u041f\u041e\u0412 \u041d\u0423\u0420\u0411\u0415\u041a \u0410\u0417\u0410\u041c\u0410\u0422\u041e\u0412\u0418\u0427", grade: "11" },
+  { fullName: "\u0428\u0410\u0419\u041c\u0415\u0420\u0414\u0415\u041d \u0415\u041b\u041d\u04b0\u0420 \u0410\u0420\u041d\u0423\u0420\u04b0\u041b\u042b", grade: "11" }
+];
+
+const EXCEL_STUDENT_SEEDS = EXCEL_STUDENT_ROWS.map((row, idx) => {
+  const n = idx + 1;
+  return {
+    fullName: row.fullName,
+    email: `stu${String(n).padStart(3, "0")}@demo.local`,
+    login: `stu${String(n).padStart(3, "0")}`,
+    plainPassword: `123${String(n).padStart(3, "0")}`,
+    grade: String(row.grade || ""),
+    letter: ""
+  };
+});
+
+const DEMO_STUDENT_SEEDS = [...BASE_DEMO_STUDENT_SEEDS, ...EXCEL_STUDENT_SEEDS];
+
+const REMOVED_DEMO_LOGINS = [
+  "G8iF34902@school4902",
+  "ddKGn4902@school4902",
+  "Zxiqd4902@school4902",
+  "CsPCK4902@school4902",
+  "G8D34902@school4902"
+];
+
+const AUTO_SCHEDULE_ID = "auto-demo-schedule-all-students";
+
+const SCHOOL_PHOTO_URLS = [
+  "file:///C:/Users/nazhi/.cursor/projects/c-Users-nazhi-Desktop-acron-edu-0-4-2/assets/c__Users_nazhi_AppData_Roaming_Cursor_User_workspaceStorage_2335a6d09ac5d172c091eb972a6cd789_images_WhatsApp_Image_2026-04-20_at_20.00.50-1cff18a2-12f2-49fb-8c80-d5eabd676407.png",
+  "file:///C:/Users/nazhi/.cursor/projects/c-Users-nazhi-Desktop-acron-edu-0-4-2/assets/c__Users_nazhi_AppData_Roaming_Cursor_User_workspaceStorage_2335a6d09ac5d172c091eb972a6cd789_images_WhatsApp_Image_2026-04-20_at_20.00.51-92a6d243-c135-4aa1-a9ff-e85e2a4d35fc.png",
+  "file:///C:/Users/nazhi/.cursor/projects/c-Users-nazhi-Desktop-acron-edu-0-4-2/assets/c__Users_nazhi_AppData_Roaming_Cursor_User_workspaceStorage_2335a6d09ac5d172c091eb972a6cd789_images_WhatsApp_Image_2026-04-20_at_20.00.52__3_-070ffb7e-b940-4a9b-b36e-bf125bc6583c.png",
+  "file:///C:/Users/nazhi/.cursor/projects/c-Users-nazhi-Desktop-acron-edu-0-4-2/assets/c__Users_nazhi_AppData_Roaming_Cursor_User_workspaceStorage_2335a6d09ac5d172c091eb972a6cd789_images_WhatsApp_Image_2026-04-20_at_20.00.53-9110f606-357e-4db5-9d82-327f47a27fa2.png",
+  "file:///C:/Users/nazhi/.cursor/projects/c-Users-nazhi-Desktop-acron-edu-0-4-2/assets/c__Users_nazhi_AppData_Roaming_Cursor_User_workspaceStorage_2335a6d09ac5d172c091eb972a6cd789_images_WhatsApp_Image_2026-04-20_at_20.00.53__1_-194ce05c-d53e-437c-9dca-a1dd0eaa193c.png"
 ];
 
 /** 25 школьных вопросов по информатике (автопроверка). topic — тема для отчёта «повторить / усвоение». */
@@ -558,7 +606,7 @@ function mergeSite(partial) {
     name: "EduMetrics.com",
     domain: "edumetrics.com",
     language: ["kz", "ru"],
-    theme: { primaryColor: "#6C4CF1", secondaryColor: "#F5F6FA", font: "Inter, sans-serif" }
+    theme: { primaryColor: "#00AFCA", secondaryColor: "#EAF9FF", font: "Inter, sans-serif" }
   };
   const o = partial && typeof partial === "object" ? partial : {};
   return { ...base, ...o, theme: { ...base.theme, ...(o.theme || {}) } };
@@ -736,7 +784,39 @@ function seedDemoStudents() {
   const users = getUsers();
   let changed = false;
   for (const d of demos) {
-    if (users.some((u) => loginEquals(u.login, d.login))) continue;
+    const existing = users.find((u) => loginEquals(u.login, d.login));
+    if (existing) {
+      if (String(existing.fullName ?? "") !== String(d.fullName)) {
+        existing.fullName = d.fullName;
+        changed = true;
+      }
+      if (String(existing.email ?? "") !== String(d.email)) {
+        existing.email = d.email;
+        changed = true;
+      }
+      if (existing.role !== "student") {
+        existing.role = "student";
+        changed = true;
+      }
+      if (String(existing.grade ?? "") !== String(d.grade)) {
+        existing.grade = d.grade;
+        changed = true;
+      }
+      if (String(existing.letter ?? "") !== String(d.letter)) {
+        existing.letter = d.letter;
+        changed = true;
+      }
+      if (existing.plainPassword !== d.plainPassword) {
+        existing.plainPassword = d.plainPassword;
+        changed = true;
+      }
+      const nextHash = hashPassword(d.plainPassword);
+      if (existing.passwordHash !== nextHash) {
+        existing.passwordHash = nextHash;
+        changed = true;
+      }
+      continue;
+    }
     users.push({
       fullName: d.fullName,
       email: d.email,
@@ -750,6 +830,59 @@ function seedDemoStudents() {
     changed = true;
   }
   if (changed) saveUsers(users);
+}
+
+function cleanupRemovedDemoStudents() {
+  const users = getUsers();
+  const nextUsers = users.filter((u) => !REMOVED_DEMO_LOGINS.some((x) => loginEquals(x, u.login)));
+  if (nextUsers.length !== users.length) saveUsers(nextUsers);
+}
+
+/**
+ * Гарантирует «демо-тест для всех»: чтобы любой ученик при входе видел хотя бы один запланированный тест.
+ * Обновляет аудиторию по текущим аккаунтам учеников (без дублей).
+ */
+function ensureAutoScheduledTestForAllStudents() {
+  const students = getUsers().filter((u) => u.role === "student");
+  if (!students.length) return;
+  const grades = [...new Set(students.map((u) => String(u.grade || "")).filter(Boolean))].sort((a, b) => Number(a) - Number(b));
+  const today = getTodayISODate();
+  let arr = [];
+  try {
+    arr = JSON.parse(localStorage.getItem(STORAGE_KEYS.scheduledTests) || "[]");
+  } catch {
+    arr = [];
+  }
+  const existingIdx = arr.findIndex((e) => e && e.id === AUTO_SCHEDULE_ID);
+  const payload = {
+    id: AUTO_SCHEDULE_ID,
+    createdAt: arr[existingIdx]?.createdAt || new Date().toISOString(),
+    calendarDate: today,
+    testType: "subject",
+    subject: "informatics",
+    questionCount: INFORMATICS_QUESTIONS.length,
+    grades,
+    letter: null,
+    includeAllStudentsInGrades: true,
+    studentLogins: students.map((u) => u.login),
+    studentsSnapshot: students.map((u) => ({
+      login: u.login,
+      fullName: u.fullName,
+      grade: u.grade,
+      letter: u.letter
+    })),
+    language: "kk",
+    startTime: `${today}T09:00:00`,
+    durationHours: 24,
+    autoSeed: true
+  };
+  if (existingIdx >= 0) arr[existingIdx] = { ...arr[existingIdx], ...payload };
+  else arr.push(payload);
+  try {
+    localStorage.setItem(STORAGE_KEYS.scheduledTests, JSON.stringify(arr));
+  } catch {
+    /* ignore */
+  }
 }
 
 function restoreSessionUser() {
@@ -878,7 +1011,25 @@ function renderHero(data) {
   const heroBtns = (data.hero.buttons ?? []).filter((b) => b && b.id !== "teacher");
   const buttons = heroBtns.map((b) => `<button class="btn" type="button" data-hero-btn="${b.id}">${t(b.label)}</button>`).join("");
   const rebrand = data.hero?.rebrand ? `<p class="hero-rebrand">${escapeHtml(t(data.hero.rebrand))}</p>` : "";
-  return `<section class="hero"><div class="container"><div class="hero-grid fade-in"><div class="hero-card">${rebrand}<h1 class="hero-title">${t(data.hero.title)}</h1><p class="hero-subtitle">${t(data.hero.subtitle)}</p><div class="hero-buttons">${buttons}</div></div><div class="hero-visual"><div class="blob"></div></div></div></div></section>`;
+  const heroPhoto = SCHOOL_PHOTO_URLS[0]
+    ? `<img class="hero-photo" src="${escapeAttr(SCHOOL_PHOTO_URLS[0])}" alt="${escapeAttr(state.lang === "kz" ? "Мектеп фотосы" : "Фото школы")}" loading="eager" />`
+    : "";
+  return `<section class="hero"><div class="container"><div class="hero-grid fade-in"><div class="hero-card">${rebrand}<h1 class="hero-title">${t(data.hero.title)}</h1><p class="hero-subtitle">${t(data.hero.subtitle)}</p><div class="hero-buttons">${buttons}</div></div><div class="hero-visual">${heroPhoto}<div class="blob"></div></div></div></div></section>`;
+}
+
+function renderSchoolGallery() {
+  if (!SCHOOL_PHOTO_URLS.length) return "";
+  const title = state.lang === "kz" ? "Біздің мектеп" : "Наша школа";
+  const subtitle = state.lang === "kz" ? "Мектеп фотогалереясы" : "Фотогалерея школы";
+  const photos = SCHOOL_PHOTO_URLS.map(
+    (u, i) =>
+      `<figure class="school-photo-card"><img src="${escapeAttr(u)}" alt="${escapeAttr(
+        state.lang === "kz" ? `Мектеп суреті ${i + 1}` : `Фото школы ${i + 1}`
+      )}" loading="lazy" /></figure>`
+  ).join("");
+  return `<section class="section school-gallery-section"><div class="container"><div class="school-gallery-head"><h3 class="section-title">${escapeHtml(
+    title
+  )}</h3><p class="hero-subtitle">${escapeHtml(subtitle)}</p></div><div class="school-gallery-grid">${photos}</div></div></section>`;
 }
 
 function renderAuthModal(data) {
@@ -900,7 +1051,13 @@ function renderFooter(data) {
   const buttons = (data.footer?.buttons ?? [])
     .map((b, i) => `<button class="${i === 0 ? "btn btn-primary" : "btn"}" type="button" data-footer-btn="${b.id}">${t(b.label)}</button>`)
     .join("");
-  const socials = (data.footer?.socials ?? []).map((s) => `<a class="pill" href="#" data-social="${s.id}">${escapeHtml(s.label)}</a>`).join("");
+  const socials = (data.footer?.socials ?? [])
+    .map((s) => {
+      const href = s?.url ? escapeAttr(s.url) : "#";
+      const attrs = s?.url ? ' target="_blank" rel="noopener noreferrer"' : "";
+      return `<a class="pill" href="${href}" data-social="${escapeAttr(s.id)}"${attrs}>${escapeHtml(s.label)}</a>`;
+    })
+    .join("");
   const actionsBlock = buttons ? `<div class="footer-actions">${buttons}</div>` : "";
   return `<footer class="footer"><div class="container"><div class="footer-grid fade-in"><div><div class="footer-title">${t(data.footer?.contactsTitle)}</div><div class="contacts"><div><span>Phone:</span> ${escapeHtml(c.phone ?? "")}</div><div><span>Email:</span> ${escapeHtml(c.email ?? "")}</div>${workLine}</div></div><div>${actionsBlock}<div class="socials">${socials}</div></div></div><div class="fineprint">${escapeHtml(data.footer?.copyright ?? "")}</div></div></footer>`;
 }
@@ -1169,6 +1326,7 @@ function renderSchedulePage(data) {
     availGrades.map((g) => `<option value="${escapeAttr(g)}">${escapeHtml(scheduleGradeLabel(g))}</option>`).join("");
 
   const studs = getScheduleFilteredStudentList();
+  const allStudents = getStudentUsers();
   const selectedUsers = getStudentUsers().filter((u) => state.scheduleDraft.selectedStudentLogins.includes(u.login));
   const studentTags = selectedUsers
     .map(
@@ -1180,6 +1338,11 @@ function renderSchedulePage(data) {
   const allInFilterSelected = studs.length > 0 && studs.every((u) => state.scheduleDraft.selectedStudentLogins.includes(u.login));
   const allRowClass = allInFilterSelected ? "student-list-row is-selected" : "student-list-row";
   const allRow = `<button type="button" class="${allRowClass}" data-student-all ${studentsDisabled ? "disabled" : ""}><span class="student-list-name">${escapeHtml(t(st.fields?.students))}</span></button>`;
+  const allAccountsSelected =
+    allStudents.length > 0 && allStudents.every((u) => state.scheduleDraft.selectedStudentLogins.includes(u.login));
+  const allAccountsRowClass = allAccountsSelected ? "student-list-row is-selected" : "student-list-row";
+  const allAccountsLabel = t(st.selectAllAccounts ?? { kz: "Барлық аккаунттарға тағайындау", ru: "Назначить всем аккаунтам" });
+  const allAccountsRow = `<button type="button" class="${allAccountsRowClass}" data-student-all-accounts><span class="student-list-name">${escapeHtml(allAccountsLabel)}</span><span class="student-list-meta">${escapeHtml(String(allStudents.length || 0))}</span></button>`;
 
   const studRows = studs.length
     ? studs
@@ -1207,9 +1370,33 @@ function renderSchedulePage(data) {
   const activeSubjectLabel = escapeHtml(t(st.fields?.subjectWithInformatics));
   const scheduleTypeSelect = `<label class="field-label" for="sched-test-type">${escapeHtml(typeModeLabel)}</label><select class="input input--schedule" id="sched-test-type" aria-label="${escapeAttr(typeModeLabel)}"><option value="informatics" selected>${activeSubjectLabel}</option><option disabled value="_dev1">${devLabel}</option><option disabled value="_dev2">${devLabel}</option></select><input type="hidden" name="testType" value="subject" /><input type="hidden" name="subject" value="informatics" />`;
 
-  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(st.title)}</h1><div class="schedule-layout"><div class="schedule-cal"><div class="cal-head">${escapeHtml(calTitle)}</div><div class="cal-weekdays">${weekLabels.map((w) => `<span>${w}</span>`).join("")}</div><div class="cal-grid">${grid}</div></div><div class="schedule-form-wrap"><form data-schedule-form class="schedule-form-inner" novalidate><div class="schedule-field">${scheduleTypeSelect}<p class="form-hint schedule-subject-hint">${escapeHtml(t(st.fields?.informaticsOnlyHint))}</p></div><div class="schedule-field schedule-field--grades-only"><span class="field-label">${t(st.gradesLabel)}</span><div class="tag-field ${eGrades ? "is-invalid" : ""}"><div class="tag-list">${gradeTags}</div><select class="tag-field-add" data-add-grade aria-label="add-grade">${addGradeOpts}</select></div>${eGrades ? `<p class="field-error">${escapeHtml(t(st.errors?.classesField))}</p>` : ""}</div><div class="schedule-field schedule-field--block-students"><span class="field-label">${t(st.studentsLabel)}</span><div class="tag-field tag-field--tags-only ${eStudents ? "is-invalid" : ""}"><div class="tag-list">${studentTags || `<span class="tag-placeholder">${escapeHtml(t(st.fields?.students))}</span>`}</div></div>${eStudents ? `<p class="field-error">${escapeHtml(t(st.errors?.students))}</p>` : ""}<div class="student-list ${studentsDisabled ? "is-disabled" : ""}">${studs.length ? `${allRow}${studRows}` : studRows}</div><p class="form-hint">${escapeHtml(hint)}</p></div><div class="schedule-field"><label class="field-label" for="sched-lang">${t(st.fields?.language)}</label><select class="input input--schedule ${eLang ? "is-invalid" : ""}" id="sched-lang" name="language"><option value="">${escapeHtml(t(st.fields?.language))}</option><option value="kk">Қазақша</option><option value="ru">Орысша</option></select>${eLang ? `<p class="field-error">${escapeHtml(t(st.errors?.language))}</p>` : ""}</div><div class="schedule-time-section"><h3 class="schedule-section-heading">${escapeHtml(t(st.timeBlockTitle))}</h3><p class="schedule-section-sub">${escapeHtml(t(st.timeBlockSubtitle))}</p><div class="schedule-two-col schedule-two-col--bottom"><div class="schedule-field"><label class="field-label" for="sched-time">${t(st.fields?.startTime)}</label><input class="input input--schedule ${eTime ? "is-invalid" : ""}" id="sched-time" name="scheduleTime" type="time" value="${escapeAttr(state.scheduleStartTime)}" required />${eTime ? `<p class="field-error">${escapeHtml(t(st.errors?.startTime))}</p>` : ""}</div><div class="schedule-field"><label class="field-label" for="sched-dur">${t(st.fields?.availability)}</label><select class="input input--schedule ${eDur ? "is-invalid" : ""}" id="sched-dur" name="durationHours" aria-label="${escapeAttr(t(st.fields?.availability))}">${durOpts}</select>${eDur ? `<p class="field-error">${escapeHtml(t(st.errors?.duration))}</p>` : ""}</div></div></div><div class="schedule-actions"><button class="btn-schedule-cta" type="submit">${escapeHtml(t(st.submit) || (state.lang === "kz" ? "Жоспарлау" : "Запланировать"))}</button><button type="button" class="btn-schedule-preview" data-schedule-preview>${escapeHtml(
+  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(st.title)}</h1><div class="schedule-layout"><div class="schedule-cal"><div class="cal-head">${escapeHtml(calTitle)}</div><div class="cal-weekdays">${weekLabels.map((w) => `<span>${w}</span>`).join("")}</div><div class="cal-grid">${grid}</div></div><div class="schedule-form-wrap"><form data-schedule-form class="schedule-form-inner" novalidate><div class="schedule-field">${scheduleTypeSelect}<p class="form-hint schedule-subject-hint">${escapeHtml(t(st.fields?.informaticsOnlyHint))}</p></div><div class="schedule-field schedule-field--grades-only"><span class="field-label">${t(st.gradesLabel)}</span><div class="tag-field ${eGrades ? "is-invalid" : ""}"><div class="tag-list">${gradeTags}</div><select class="tag-field-add" data-add-grade aria-label="add-grade">${addGradeOpts}</select></div>${eGrades ? `<p class="field-error">${escapeHtml(t(st.errors?.classesField))}</p>` : ""}</div><div class="schedule-field schedule-field--block-students"><span class="field-label">${t(st.studentsLabel)}</span><div class="tag-field tag-field--tags-only ${eStudents ? "is-invalid" : ""}"><div class="tag-list">${studentTags || `<span class="tag-placeholder">${escapeHtml(t(st.fields?.students))}</span>`}</div></div>${eStudents ? `<p class="field-error">${escapeHtml(t(st.errors?.students))}</p>` : ""}<div class="student-list">${allAccountsRow}${studs.length ? `${allRow}${studRows}` : studRows}</div><p class="form-hint">${escapeHtml(hint)}</p></div><div class="schedule-field"><label class="field-label" for="sched-lang">${t(st.fields?.language)}</label><select class="input input--schedule ${eLang ? "is-invalid" : ""}" id="sched-lang" name="language"><option value="">${escapeHtml(t(st.fields?.language))}</option><option value="kk">Қазақша</option><option value="ru">Орысша</option></select>${eLang ? `<p class="field-error">${escapeHtml(t(st.errors?.language))}</p>` : ""}</div><div class="schedule-time-section"><h3 class="schedule-section-heading">${escapeHtml(t(st.timeBlockTitle))}</h3><p class="schedule-section-sub">${escapeHtml(t(st.timeBlockSubtitle))}</p><div class="schedule-two-col schedule-two-col--bottom"><div class="schedule-field"><label class="field-label" for="sched-time">${t(st.fields?.startTime)}</label><input class="input input--schedule ${eTime ? "is-invalid" : ""}" id="sched-time" name="scheduleTime" type="time" value="${escapeAttr(state.scheduleStartTime)}" required />${eTime ? `<p class="field-error">${escapeHtml(t(st.errors?.startTime))}</p>` : ""}</div><div class="schedule-field"><label class="field-label" for="sched-dur">${t(st.fields?.availability)}</label><select class="input input--schedule ${eDur ? "is-invalid" : ""}" id="sched-dur" name="durationHours" aria-label="${escapeAttr(t(st.fields?.availability))}">${durOpts}</select>${eDur ? `<p class="field-error">${escapeHtml(t(st.errors?.duration))}</p>` : ""}</div></div></div><div class="schedule-actions"><button class="btn-schedule-cta" type="submit">${escapeHtml(t(st.submit) || (state.lang === "kz" ? "Жоспарлау" : "Запланировать"))}</button><button type="button" class="btn-schedule-preview" data-schedule-preview>${escapeHtml(
     t(st.previewButton) || (state.lang === "kz" ? "Өзіңіз көру (алдын ала қарау)" : "Попробовать самому (предпросмотр)")
   )}</button></div></form></div></div></div>${renderScheduleTestPreviewModal(data)}`;
+}
+
+function renderScheduledAdminPage(data) {
+  const title = t(data.scheduleTest?.scheduledPageTitle ?? { kz: "Жоспарланған тесттер", ru: "Запланированные тесты" });
+  const all = getScheduledTests().sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+  const rows = all
+    .map((s, i) => {
+      const when = s.startTime ? formatIsoDate(s.startTime) : escapeHtml(s.calendarDate || "—");
+      const classes = (s.grades || []).map((g) => escapeHtml(scheduleGradeLabel(g))).join(", ") || "—";
+      const audience = s.includeAllStudentsInGrades
+        ? escapeHtml(state.lang === "kz" ? "Барлық аккаунттар (сыныптар бойынша)" : "Все аккаунты (по классам)")
+        : (s.studentsSnapshot || [])
+            .map((u) => escapeHtml(u.fullName || u.login || ""))
+            .filter(Boolean)
+            .join(", ") || (s.studentLogins || []).map((l) => escapeHtml(l)).join(", ") || "—";
+      return `<tr><td>${i + 1}</td><td>${escapeHtml(s.calendarDate || "—")}</td><td>${when}</td><td>${classes}</td><td>${audience}</td><td>${escapeHtml(String(s.durationHours || "—"))}</td></tr>`;
+    })
+    .join("");
+  const emptyMsg = state.lang === "kz" ? "Әзірге жоспарланған тесттер жоқ." : "Пока нет запланированных тестов.";
+  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${escapeHtml(title)}</h1>${
+    rows
+      ? `<div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>${escapeHtml(state.lang === "kz" ? "Күні" : "Дата")}</th><th>${escapeHtml(state.lang === "kz" ? "Басталуы" : "Начало")}</th><th>${escapeHtml(state.lang === "kz" ? "Сыныптар" : "Классы")}</th><th>${escapeHtml(state.lang === "kz" ? "Кімге" : "Кому")}</th><th>${escapeHtml(state.lang === "kz" ? "Сағат" : "Часы")}</th></tr></thead><tbody>${rows}</tbody></table></div>`
+      : `<p class="hero-subtitle">${escapeHtml(emptyMsg)}</p>`
+  }</div>`;
 }
 
 function renderTestBuilderPage(data) {
@@ -1231,7 +1418,10 @@ function renderAccountsPage(data) {
   const rows = list
     .map((u, i) => {
       const pwd = u.plainPassword || "(localStorage)";
-      return `<tr><td>${i + 1}</td><td>${escapeHtml(u.fullName)}</td><td>${escapeHtml(u.grade || "—")}</td><td>${escapeHtml(u.letter || "—")}</td><td><code>${escapeHtml(u.login)}</code></td><td><code>${escapeHtml(pwd)}</code></td></tr>`;
+      const isTester = loginEquals(u.login, "tester");
+      const nameClass = isTester ? "tester-highlight" : "";
+      const loginClass = isTester ? "tester-highlight" : "";
+      return `<tr><td>${i + 1}</td><td class="${nameClass}">${escapeHtml(u.fullName)}</td><td>${escapeHtml(u.grade || "—")}</td><td>${escapeHtml(u.letter || "—")}</td><td><code class="${loginClass}">${escapeHtml(u.login)}</code></td><td><code>${escapeHtml(pwd)}</code></td></tr>`;
     })
     .join("");
   return `<div class="admin-page fade-in"><div class="accounts-head"><h1 class="admin-page-title">${t(ap.title)}</h1><button class="btn" type="button" data-export-excel>${t(ap.exportExcel)}</button></div><div class="accounts-filters"><input class="input" data-filter-name placeholder="${t(ap.filters?.name)}" value="${escapeAttr(f.name)}" /><input class="input" data-filter-grade placeholder="${t(ap.filters?.grade)}" value="${escapeAttr(f.grade)}" /><input class="input" data-filter-letter placeholder="${t(ap.filters?.letter)}" value="${escapeAttr(f.letter)}" /></div><div class="table-wrap"><table class="data-table"><thead><tr><th>${ap.columns?.idx ?? "#"}</th><th>${t(ap.columns?.name)}</th><th>${t(ap.columns?.grade)}</th><th>${t(ap.columns?.letter)}</th><th>${t(ap.columns?.login)}</th><th>${t(ap.columns?.password)}</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
@@ -1285,7 +1475,7 @@ function renderResultsPage(data) {
 
 function renderAdminDashboard(data) {
   const ac = data.adminCabinet ?? {};
-  return `<div class="admin-page fade-in"><div class="admin-profile"><div class="admin-avatar"></div><div><div class="admin-org">${t(ac.orgLabel)}</div><h2 class="admin-school">${t(ac.schoolName)}</h2></div></div><div class="dashboard-cards"><a class="dashboard-card" href="#/admin/schedule"><h3>${t({ kz: "Тестті жоспарлау", ru: "Планирование теста" })}</h3></a><a class="dashboard-card" href="#/admin/testBuilder"><h3>${t({ kz: "Тест құрастырушы", ru: "Конструктор тестов" })}</h3></a><a class="dashboard-card" href="#/admin/accounts"><h3>${t({ kz: "Оқушылар", ru: "Учащиеся" })}</h3></a><a class="dashboard-card" href="#/admin/results"><h3>${t({ kz: "Қорытындылар", ru: "Результаты" })}</h3></a></div></div>`;
+  return `<div class="admin-page fade-in"><div class="admin-profile"><div class="admin-avatar"></div><div><div class="admin-org">${t(ac.orgLabel)}</div><h2 class="admin-school">${t(ac.schoolName)}</h2></div></div><div class="dashboard-cards"><a class="dashboard-card" href="#/admin/schedule"><h3>${t({ kz: "Тестті жоспарлау", ru: "Планирование теста" })}</h3></a><a class="dashboard-card" href="#/admin/scheduled"><h3>${t({ kz: "Жоспарланған тесттер", ru: "Запланированные тесты" })}</h3></a><a class="dashboard-card" href="#/admin/testBuilder"><h3>${t({ kz: "Тест құрастырушы", ru: "Конструктор тестов" })}</h3></a><a class="dashboard-card" href="#/admin/accounts"><h3>${t({ kz: "Оқушылар", ru: "Учащиеся" })}</h3></a><a class="dashboard-card" href="#/admin/results"><h3>${t({ kz: "Қорытындылар", ru: "Результаты" })}</h3></a></div></div>`;
 }
 
 function renderAdminResultDetailPage(data, scheduleId, studentLogin) {
@@ -1307,6 +1497,8 @@ function renderAdminMain(data, section, resultDetail) {
   switch (section) {
     case "schedule":
       return renderSchedulePage(data);
+    case "scheduled":
+      return renderScheduledAdminPage(data);
     case "testBuilder":
       return renderTestBuilderPage(data);
     case "accounts":
@@ -1348,7 +1540,9 @@ function renderStudentDashboardContent(data) {
     })
     .join("");
 
-  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(sc.title)}</h1><p class="hero-subtitle"><strong>${escapeHtml(user?.fullName || "")}</strong> · ${escapeHtml(user?.login || "")}</p><h2 class="student-tests-heading">${t(sc.scheduledTestsHeading)}</h2>${
+  const isTester = loginEquals(user?.login, "tester");
+  const testerClass = isTester ? "tester-highlight" : "";
+  return `<div class="admin-page fade-in"><h1 class="admin-page-title">${t(sc.title)}</h1><p class="hero-subtitle"><strong class="${testerClass}">${escapeHtml(user?.fullName || "")}</strong> · <span class="${testerClass}">${escapeHtml(user?.login || "")}</span></p><h2 class="student-tests-heading">${t(sc.scheduledTestsHeading)}</h2>${
     cards ? `<div class="student-tests-grid">${cards}</div>` : `<p class="hero-subtitle muted">${t(sc.noScheduledTests)}</p>`
   }</div>`;
 }
@@ -1390,7 +1584,7 @@ function renderStudentShell(data) {
 }
 
 function renderLanding(data) {
-  return `${renderHeader(data)}<main>${renderHero(data)}${renderAiTutorSection(data)}</main>${renderFooter(data)}${renderAuthModal(data)}${renderToast()}`;
+  return `${renderHeader(data)}<main>${renderHero(data)}${renderSchoolGallery()}${renderAiTutorSection(data)}</main>${renderFooter(data)}${renderAuthModal(data)}${renderToast()}`;
 }
 
 function renderApp(data) {
@@ -1804,6 +1998,23 @@ function attachEvents(data) {
       renderApp(data);
       return;
     }
+    const allAccBtn = e.target.closest("[data-student-all-accounts]");
+    if (allAccBtn) {
+      const list = getStudentUsers();
+      const allSel = list.length && list.every((u) => state.scheduleDraft.selectedStudentLogins.includes(u.login));
+      if (allSel) {
+        state.scheduleDraft.selectedStudentLogins = [];
+      } else {
+        state.scheduleDraft.selectedStudentLogins = list.map((u) => u.login);
+        state.scheduleDraft.selectedGrades = [...new Set(list.map((u) => String(u.grade || "")).filter(Boolean))].sort(
+          (a, b) => Number(a) - Number(b)
+        );
+      }
+      state.scheduleFormErrors.students = false;
+      state.scheduleFormErrors.grades = false;
+      renderApp(data);
+      return;
+    }
     if (e.target.closest("[data-schedule-preview]")) {
       e.preventDefault();
       state.scheduleTestPreviewOpen = true;
@@ -1973,12 +2184,6 @@ function attachEvents(data) {
     el.addEventListener("click", () => alert(`Footer: ${el.getAttribute("data-footer-btn")}`));
   });
 
-  document.querySelectorAll("[data-social]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      alert(`Social: ${el.getAttribute("data-social")}`);
-    });
-  });
 }
 
 function escapeHtml(str) {
@@ -2004,7 +2209,7 @@ function loadCachedData() {
 
 function renderFileModeLoader() {
   const app = document.getElementById("app");
-  app.innerHTML = `<div style="padding:24px;font-family:Inter,system-ui,sans-serif;color:#0f172a;font-weight:800;line-height:1.45;"><div style="font-size:18px;letter-spacing:-0.02em;">File mode</div><div style="margin-top:8px;color:#344054;font-weight:700;">Select <code>data.json</code> manually.</div><div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><button id="pickDataBtn" style="border:0;cursor:pointer;border-radius:999px;padding:10px 14px;font-weight:900;background:linear-gradient(135deg, rgba(108, 76, 241, 1) 0%, rgba(161, 132, 255, 1) 100%);color:#fff;">Load data.json</button></div><input id="dataFileInput" type="file" accept="application/json,.json" style="display:none" /></div>`;
+  app.innerHTML = `<div style="padding:24px;font-family:Inter,system-ui,sans-serif;color:#0f172a;font-weight:800;line-height:1.45;"><div style="font-size:18px;letter-spacing:-0.02em;">File mode</div><div style="margin-top:8px;color:#344054;font-weight:700;">Select <code>data.json</code> manually.</div><div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;"><button id="pickDataBtn" style="border:0;cursor:pointer;border-radius:999px;padding:10px 14px;font-weight:900;background:linear-gradient(135deg, rgba(0, 175, 202, 1) 0%, rgba(243, 198, 77, 1) 100%);color:#fff;">Load data.json</button></div><input id="dataFileInput" type="file" accept="application/json,.json" style="display:none" /></div>`;
   const input = document.getElementById("dataFileInput");
   document.getElementById("pickDataBtn")?.addEventListener("click", () => input?.click());
   input?.addEventListener("change", async () => {
@@ -2021,7 +2226,9 @@ async function init() {
   restorePreferredLang();
   restorePreferredThemeMode();
   seedDefaultAdmin();
+  cleanupRemovedDemoStudents();
   seedDemoStudents();
+  ensureAutoScheduledTestForAllStudents();
   syncDemoStudentsIntoScheduledTests();
   state.currentUser = restoreSessionUser();
   const dataUrl = new URL("data.json", window.location.href);
